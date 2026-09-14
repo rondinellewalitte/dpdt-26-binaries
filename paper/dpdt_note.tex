@@ -12,14 +12,17 @@
 \usepackage{txfonts}
 \usepackage{rotating}
 \usepackage[colorlinks,citecolor=blue,urlcolor=blue]{hyperref}
+\usepackage{orcidlink}
+\hypersetup{pdfauthor={R. Walitte}}
 
 \renewcommand*\dblfloatpagefraction{0.85}
+\hypersetup{pdftitle={How archival eclipse timing can produce period change: Three mechanisms quantified on 26 short-period binaries}}
 \begin{document}
 
 \title{How archival eclipse timing can produce period change}
 \subtitle{Three mechanisms quantified on 26 short-period binaries}
 
-\author{R.~Walitte\inst{1}}
+\author{R.~Walitte\orcidlink{0009-0004-1776-2754}\inst{1}}
 \authorrunning{Walitte}
 \institute{Independent researcher, Rua 05, 76385-286 Goian\'esia, GO, Brazil\\ \email{rondinellewalitte@gmail.com}}
 
@@ -373,7 +376,7 @@ It is the only detection that does not depend on the TESS-internal structure: it
 
 Whether the primary and the secondary move together or in opposition was measured on the same 20-yr linear ephemeris of the primaries (\texttt{src/\allowbreak caso\_232634196.py}; the expectation was declared as not blind, because the stored numbers were already in view): the change from the 2019--2020 sectors to sector 75 is $-$2.7 $\pm$ 0.9 min for the primary and $-$11.6 $\pm$ 1.5 min for the secondary --- same sign, both significant (the values depend on the reference ephemeris, which moved with the corrected bars; the differential does not). That excludes the anti-correlated signature of apsidal motion, and it is where the conclusion stops: the common mode, $-$2.7 min, is the \textit{smaller} of the two terms, and the differential, $-$9.0 $\pm$ 1.7 min, the larger. A period change plus a differential drift reproduces the observation; so does a spot pattern that affects the two minima unequally. The data do not separate the two hypotheses. The reference matters and is stated: a linear ephemeris fitted to the TESS epochs of both minima at once would split the differential drift between them by construction and read ``opposition'' for any target; the reference used is the ephemeris against which the curvature was claimed.
 
-What the paper can say about this star is therefore: a curvature over 16--20 yr carried by the archival lever, insensitive to the archival bars and surviving the TESS sensitivity test at its lower value, whose secondary moves in the same direction as its primary, and whose common-mode change is smaller than the differential one; a third-body orbit is not excluded (Sect.~\ref{ss:orb}). It is one object, and instead of developing it further the paper publishes the prediction that separates the two ephemerides (\texttt{src/\allowbreak previsao\_232634196.py}; expectation written and committed before running). For cycle E = 2352 counted from the sector-19 primary minimum at BJD\_TDB 2458828.9247 --- the primary minimum nearest to 2028.0 --- the quadratic of Table~\ref{t:coef} predicts BJD\_TDB 2461771.4651 $\pm$ 2.5 min (2027-12-31 23:09 TDB; full covariance, the cross term between the linear and quadratic coefficients included) and the linear ephemeris of the same seven epochs predicts 2461771.4792 $\pm$ 1.5 min (23:30 TDB; a formal bar, on a fit with reduced $\chi^2$ 21.7), 20.3 min later: 8.1$\sigma$ of the quadratic prediction. One primary minimum timed to a minute in 2027--2028 --- one TESS sector or one night of CCD photometry --- decides between them, and a minimum that matches neither says the O$-$C is not polynomial, the third possibility this paper cannot exclude.
+What the paper can say about this star is therefore: a curvature over 16--20 yr carried by the archival lever, insensitive to the archival bars and surviving the TESS sensitivity test at its lower value, whose secondary moves in the same direction as its primary, and whose common-mode change is smaller than the differential one; a third-body orbit is not excluded (Sect.~\ref{ss:orb}). It is one object, and instead of developing it further the paper publishes the prediction that separates the two ephemerides (\texttt{src/\allowbreak previsao\_232634196.py}; expectation written and committed before running). For cycle E = 2352 counted from the sector-19 primary minimum at BJD\_TDB 2458828.9247 --- the primary minimum nearest to 2028.0 --- the quadratic of Table~\ref{t:coef} predicts BJD\_TDB 2461771.4651 $\pm$ 2.5 min (2027-12-31 23:09 TDB; full covariance, the cross term between the linear and quadratic coefficients included) and the linear ephemeris of the same seven epochs predicts 2461771.4792 $\pm$ 1.5 min (23:30 TDB), 20.3 min later: 8.1$\sigma$ of the quadratic prediction. The linear bar is the formal error of a fit with reduced $\chi^2$ 21.7 --- a model the seven epochs already reject --- and is an underestimate (scaled by the misfit it would be 7 min); the decision does not rest on it but on the quadratic window, whose $\pm$2.5 min comes from a fit with reduced $\chi^2$ 0.60: a minimum within a few minutes of the quadratic time confirms the coefficient, and one 20 min later, or anywhere else, refutes it. One primary minimum timed to a minute in 2027--2028 --- one TESS sector or one night of CCD photometry --- decides between them, and a minimum that matches neither says the O$-$C is not polynomial, the third possibility this paper cannot exclude.
 
 
 \section{What is and is not claimed}\label{s:claim}

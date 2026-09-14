@@ -422,6 +422,7 @@ def main():
 
     titulo_md = md.split("\n", 1)[0].lstrip("# ").strip()
     t1, t2 = titulo_md.split(": ", 1)
+    preambulo += "\\hypersetup{pdftitle={" + t1 + ": " + t2[0].upper() + t2[1:] + "}}\n"      # metadados do PDF (a listagem do arXiv le daqui)
     doc = (cabecalho + preambulo + "\\begin{document}\n\n"
            + f"\\title{{{inline(t1)}}}\n\\subtitle{{{inline(t2[0].upper() + t2[1:])}}}\n\n" + autor + "\n\n" + abstract + "\n" + keywords + "\n\n\\maketitle\n"
            + "".join(saida))
