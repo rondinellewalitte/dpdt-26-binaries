@@ -1,6 +1,7 @@
 # How archival eclipse timing can produce period change: three mechanisms quantified on 26 short-period binaries
 
 Code, per-target records and manuscript source for the paper of the same title (R. Walitte, submitted to A&A).
+Archived at Zenodo: https://doi.org/10.5281/zenodo.22740629
 This repository is the archive named in the paper's *Data availability* section: every number in the paper is
 produced by the scripts here from the records here, and the tables, figures and TeX are regenerated at every run.
 
