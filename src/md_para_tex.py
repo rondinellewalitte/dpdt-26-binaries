@@ -100,7 +100,7 @@ SIMBOLOS = [
 
 
 def inline(t):
-    """markdown inline -> TeX; protege codigo e matematica antes de escapar."""
+    """markdown inline -> TeX; protege codigo e matematica antes de escapar; URLs viram \\url{} do hyperref."""
     partes = re.split(r"(`[^`]*`)", t)
     out = []
     for k, parte in enumerate(partes):
@@ -111,6 +111,8 @@ def inline(t):
         # simbolos primeiro (com placeholders, para o escape nao mexer neles), depois o escape
         s = parte
         subst = {}
+        for i, u in enumerate(re.findall(r"https?://[^\s)\];]+", s)):          # URL: placeholder como os simbolos, restaurada como \url{}
+            ch = f"\x00U{i}\x01"; s = s.replace(u, ch); subst[ch] = "\\url{" + u + "}"
         for n, (a, b) in enumerate(SIMBOLOS):
             if a in s:
                 # terminador DIFERENTE do inicio: com "\x00N\x00", o fim de um placeholder mais os digitos do texto
