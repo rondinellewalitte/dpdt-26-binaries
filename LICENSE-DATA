@@ -1,0 +1,25 @@
+Creative Commons Attribution 4.0 International (CC BY 4.0)
+
+The per-target timing records and measurement tables (`data/`), the
+manuscript source, the machine-readable epoch table and the figures
+(`reports/`), and the generated TeX and PDF (`paper/dpdt_note.tex`,
+`paper/dpdt_note_v1.tex`, `paper/dpdt_note.pdf`, `paper/figures/`) are
+licensed under the Creative Commons Attribution 4.0 International licence.
+
+Copyright (c) 2026 Rondinelle Walitte
+
+You are free to share and adapt this material for any purpose, including
+commercially, provided that you give appropriate credit, provide a link to
+the licence, and indicate if changes were made.
+
+Attribution: Walitte, R. (2026), "How archival eclipse timing can produce
+period change: three mechanisms quantified on 26 short-period binaries",
+[journal reference and Zenodo DOI to be inserted at submission].
+
+Full legal code: https://creativecommons.org/licenses/by/4.0/legalcode
+Human-readable summary: https://creativecommons.org/licenses/by/4.0/
+
+Not covered by this licence: the code in `src/` (MIT, see LICENSE) and the
+A&A class files in `paper/` (aa.cls, aa.bst, lineno.sty, linenoaa.sty),
+which are distributed by EDP Sciences under their own terms. The underlying
+TESS, SuperWASP and VarAstro data are public and credited in the paper.

@@ -72,3 +72,8 @@ catalogue query for the 88 targets. The records it produced are here; the contro
 
 Python 3.12; numpy 2.5, pandas 2.3, scipy 1.18, astropy 8.0, astroquery 0.4.11, matplotlib 3.11, pyarrow 25
 (`requirements.txt`). The TeX compiles with the A&A class shipped in `paper/` (pdflatex, three passes).
+
+## Licence
+
+Code in `src/`: MIT (`LICENSE`). Data, manuscript source, epoch table, figures and generated TeX/PDF: CC BY 4.0 (`LICENSE-DATA`).
+The A&A class files in `paper/` are EDP Sciences' and keep their own terms.
