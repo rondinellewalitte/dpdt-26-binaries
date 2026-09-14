@@ -1,0 +1,141 @@
+{
+ "tic": 144194304,
+ "P_ref_d": 0.483469,
+ "P_escada_d": 0.4834705021781583,
+ "sP_escada_d": 8.31686086245172e-08,
+ "n_pontos": 5,
+ "n_aglomerados_tess": 2,
+ "n_temporadas_swasp": 3,
+ "dof": 2,
+ "pontos": [
+  {
+   "fonte": "SuperWASP 2453943",
+   "t0": -3057.3735490425906,
+   "sig_min": 2.6216032522599284,
+   "sig_formal_min": 0.5700116604566574,
+   "sig_metades_min": NaN,
+   "E": -10612,
+   "res_linear_min": 14.874889148704824
+  },
+  {
+   "fonte": "SuperWASP 2454315",
+   "t0": -2685.1011777583926,
+   "sig_min": 2.6216032522599284,
+   "sig_formal_min": 0.5830653011798859,
+   "sig_metades_min": NaN,
+   "E": -9842,
+   "res_linear_min": 15.854358176511596
+  },
+  {
+   "fonte": "SuperWASP 2454607",
+   "t0": -2392.6045758475966,
+   "sig_min": 2.6216032522599284,
+   "sig_formal_min": 0.8093297481536865,
+   "sig_metades_min": NaN,
+   "E": -9237,
+   "res_linear_min": 12.133468122410704
+  },
+  {
+   "fonte": "TESS s28",
+   "t0": 2073.194637444444,
+   "sig_min": 0.399999999863212,
+   "sig_formal_min": 0.399999999863212,
+   "sig_metades_min": 0.14142135595742808,
+   "E": 0,
+   "res_linear_min": -3.232325981298345
+  },
+  {
+   "fonte": "TESS s105",
+   "t0": 4218.836726111111,
+   "sig_min": 0.349999999962165,
+   "sig_formal_min": 0.349999999962165,
+   "sig_metades_min": 0.14142135595742808,
+   "E": 4438,
+   "res_linear_min": 1.7107698516338132
+  }
+ ],
+ "linear": {
+  "chi2": 179.37921944318714,
+  "dof": 3
+ },
+ "superwasp": {
+  "sourceid": "1SWASP J215153.45-422223.5",
+  "npts": 10032,
+  "status_cobertura_por_bloco": "testado (3 blocos, 0 rejeitados)",
+  "barra_formal_min": 0.45687977224588394,
+  "barra_entre_temporadas_min": 1.4450379017243613,
+  "dispersao_entre_temporadas_min": 2.5028790646493158,
+  "temporadas": [
+   {
+    "n": 4811,
+    "n_noites": 100,
+    "t_medio": 2453942.63,
+    "n_dentro": 447,
+    "bins_vazios": 0,
+    "t0": 2453942.625,
+    "sigma_formal_min": 0.57,
+    "prof": 0.3935,
+    "desvio_min": 0.3568,
+    "dispersao_entre_blocos_min": 2.5029
+   },
+   {
+    "n": 4789,
+    "n_noites": 85,
+    "t_medio": 2454314.7007,
+    "n_dentro": 569,
+    "bins_vazios": 0,
+    "t0": 2454314.8973,
+    "sigma_formal_min": 0.5831,
+    "prof": 0.3697,
+    "desvio_min": 0.4786,
+    "dispersao_entre_blocos_min": 2.5029
+   },
+   {
+    "n": 432,
+    "n_noites": 9,
+    "t_medio": 2454607.1418,
+    "n_dentro": 79,
+    "bins_vazios": 0,
+    "t0": 2454607.3939,
+    "sigma_formal_min": 0.8093,
+    "prof": 0.401,
+    "desvio_min": -3.9161,
+    "dispersao_entre_blocos_min": 2.5029
+   }
+  ]
+ },
+ "parabola": {
+  "chi2": 1.1592461069053461,
+  "dof": 2,
+  "Q_d_por_ciclo2": 1.3861265166067405e-10,
+  "sQ": 1.0383043760646646e-11,
+  "dPdt_s_por_ano": 0.01809534437505339,
+  "sdPdt_s_por_ano": 0.001355466115532479,
+  "residuos_min": [
+   -2.012,
+   1.939,
+   0.387,
+   -0.014,
+   0.005
+  ]
+ },
+ "delta_chi2": 178.21997333628178,
+ "p_curvatura": 1.1859948678288804e-40,
+ "classe": "testado",
+ "adversarial": {
+  "delta_chi2_base": 178.21997333628178,
+  "p_base": 1.1859948678288804e-40,
+  "delta_chi2_adversarial": 124.6900428714004,
+  "p_adversarial": 5.949899307412635e-29,
+  "deslocamentos_min": [
+   -2.622,
+   -2.622,
+   -2.622,
+   0.4,
+   -0.35
+  ]
+ },
+ "convencao_parabola": "parabola ponderada nos aglomerados TESS, avaliada em E do SuperWASP (cadeia_oc.ajustar)",
+ "status": "ok",
+ "segundos": 7.168578863143921
+}

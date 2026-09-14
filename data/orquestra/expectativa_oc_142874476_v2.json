@@ -1,0 +1,119 @@
+{
+  "_sobre": "v2 (2026-09-12): a expectativa corrigida para o que a cadeia EM CODIGO produz (cadeia_oc.py), depois de a v1 - escrita do comentario - divergir em 8 de 38 campos. Esta e a linha de base de regressao para a cadeia em lote. A v1 fica em expectativa_oc_142874476.json como registro do que se acreditava.",
+  "_fontes": {
+    "epocas_tess": "src/epocas_142874476.py (bloco RESULTADO) e data/results/epocas_142874476.parquet",
+    "superwasp_e_teste": "src/run_hj_calib.py (bloco O PONTO DE 2006-2008 COM BARRA DEFENSAVEL) e src/superwasp.py (PASSO 0)",
+    "vies_da_cadeia": "src/run_hj_calib.py (bloco RESULTADO): 4 Jupiteres quentes"
+  },
+  "tic": 142874476,
+  "P_ref_d": 1.4740475,
+  "tess": {
+    "_unidade": "epoca em BTJD; sigma em min",
+    "n_aglomerados": 4,
+    "s4": {
+      "epoca_btjd": 1424.80937,
+      "tol_min": 0.1,
+      "sigma_min": 0.51,
+      "tol_sigma": 0.1,
+      "n_reducoes": 3,
+      "reducoes": {
+        "QLP": 1424.809766,
+        "TGLC": 1424.809072,
+        "eleanor": 1424.80928
+      }
+    },
+    "s31": {
+      "epoca_btjd": 2157.40971,
+      "tol_min": 0.05,
+      "sigma_min": 0.3,
+      "tol_sigma": 0.05
+    },
+    "s97": {
+      "epoca_btjd": 3961.64447,
+      "tol_min": 0.05,
+      "sigma_min": 0.3,
+      "tol_sigma": 0.05
+    },
+    "s105": {
+      "epoca_btjd": 4219.60278,
+      "tol_min": 0.05,
+      "sigma_min": 0.3,
+      "tol_sigma": 0.05
+    },
+    "linear": {
+      "residuos_min": [
+        1.3,
+        -0.61,
+        0.1,
+        0.07
+      ],
+      "tol_min": 0.1,
+      "chi2": 10.73,
+      "dof": 2,
+      "tol_chi2": 0.1
+    },
+    "parabola": {
+      "residuos_min": [
+        0.2,
+        -0.13,
+        0.31,
+        -0.24
+      ],
+      "tol_min": 0.1,
+      "chi2": 2.04,
+      "dof": 1,
+      "tol_chi2": 0.1
+    },
+    "delta_chi2": 8.68,
+    "tol_delta_chi2": 0.15,
+    "Q_d_por_ciclo2": 1.368e-09,
+    "tol_Q_rel": 0.02
+  },
+  "superwasp": {
+    "sourceid": "1SWASP J032525.83-342938.6",
+    "sep_arcsec_max": 0.5,
+    "npts": 8809,
+    "tol_npts": 0,
+    "data_ini": "2006-07-02",
+    "data_fim": "2008-01-19",
+    "n_temporadas": 2,
+    "status_cobertura_por_bloco": "testado",
+    "epoca_bjd_tdb": 2454293.06732,
+    "tol_min": 0.1,
+    "E": -4699,
+    "barra_interna_min": 2.1,
+    "tol_barra": 0.05,
+    "vies_cadeia_min": -2.14,
+    "vies_cadeia_sigma_min": 0.78,
+    "barra_total_min": 2.24,
+    "tol_barra_total": 0.05,
+    "_barra_interna": "dispersao entre temporadas (2,10) > formal (1,51); a maior vale"
+  },
+  "teste": {
+    "residuo_no_linear_min": 22.72,
+    "tol_min": 0.2,
+    "sigmas_linear": 10.2,
+    "tol_sigmas": 0.15,
+    "residuo_na_parabola_min": -5.48,
+    "tol_min_par": 0.2,
+    "sigmas_parabola": 2.4,
+    "tol_sigmas_par": 0.15,
+    "parabola_prevista_2007_min": 28.2,
+    "tol_prev": 0.3,
+    "graus_de_liberdade_com_swasp": 2,
+    "veredito_maximo_permitido": "ponto de 2007 a 10 sigma do linear (variacao de periodo medida); curvatura interna ao TESS p = 0,003, fragil a 1 sigma (adversarial p = 0,28); parabola pura NAO rejeitada (2,4 sigma); nada sobre a forma"
+  },
+  "adversarial": {
+    "delta_chi2_base": 8.68,
+    "p_base": 0.003,
+    "delta_chi2_adversarial": 1.19,
+    "p_adversarial": 0.28,
+    "tol_p": 0.02,
+    "deslocamentos_min": [
+      -0.513,
+      0.3,
+      0.3,
+      -0.3
+    ]
+  }
+}

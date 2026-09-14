@@ -1,0 +1,7 @@
+{
+ "tic": 377296926,
+ "status": "falha",
+ "erro": "cobertura por bloco: NAO TESTAVEL: 0 de 2 blocos com cobertura de fase",
+ "traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\Rondinelle\\PROJETOS\\nasa_discover\\src\\oc_lote.py\", line 323, in rodar_um\n    res = medir_alvo_lote(tic, ep_df, float(r.period_d), r.sourceid,\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Rondinelle\\PROJETOS\\nasa_discover\\src\\oc_lote.py\", line 232, in medir_alvo_lote\n    raise RuntimeError(f\"cobertura por bloco: {status}\")\nRuntimeError: cobertura por bloco: NAO TESTAVEL: 0 de 2 blocos com cobertura de fase\n",
+ "segundos": 7.26936936378479
+}

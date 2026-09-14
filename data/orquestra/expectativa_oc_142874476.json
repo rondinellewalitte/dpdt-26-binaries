@@ -1,0 +1,54 @@
+{
+  "_sobre": "TIC 142874476 = TYC 7024-1046-1. Componentes do resultado JA MEDIDO, escritos ANTES de a cadeia em lote rodar. Tolerancia por campo; qualquer campo fora dela, em qualquer direcao, e ESCALAR. Reproduzir o 11,2 sigma com epocas diferentes e falha vestida de sucesso.",
+  "_fontes": {
+    "epocas_tess": "src/epocas_142874476.py (bloco RESULTADO) e data/results/epocas_142874476.parquet",
+    "superwasp_e_teste": "src/run_hj_calib.py (bloco O PONTO DE 2006-2008 COM BARRA DEFENSAVEL) e src/superwasp.py (PASSO 0)",
+    "vies_da_cadeia": "src/run_hj_calib.py (bloco RESULTADO): 4 Jupiteres quentes"
+  },
+  "tic": 142874476,
+  "P_ref_d": 1.4740475,
+
+  "tess": {
+    "_unidade": "epoca em BTJD; sigma em min",
+    "n_aglomerados": 4,
+    "s4": {"epoca_btjd": 1424.80937, "tol_min": 0.10, "sigma_min": 0.51, "tol_sigma": 0.10,
+           "n_reducoes": 3,
+           "reducoes": {"QLP": 1424.809766, "TGLC": 1424.809072, "eleanor": 1424.809280}},
+    "s31": {"epoca_btjd": 2157.40971, "tol_min": 0.05, "sigma_min": 0.30, "tol_sigma": 0.05},
+    "s97": {"epoca_btjd": 3961.64447, "tol_min": 0.05, "sigma_min": 0.30, "tol_sigma": 0.05},
+    "s105": {"epoca_btjd": 4219.60278, "tol_min": 0.05, "sigma_min": 0.30, "tol_sigma": 0.05},
+    "linear": {"residuos_min": [1.30, -0.61, 0.10, 0.07], "tol_min": 0.10, "chi2": 10.73, "dof": 2, "tol_chi2": 0.10},
+    "parabola": {"residuos_min": [0.20, -0.13, 0.31, -0.24], "tol_min": 0.10, "chi2": 2.04, "dof": 1, "tol_chi2": 0.10},
+    "delta_chi2": 8.68, "tol_delta_chi2": 0.15,
+    "Q_d_por_ciclo2": 1.368e-09, "tol_Q_rel": 0.02
+  },
+
+  "superwasp": {
+    "sourceid": "1SWASP J032525.83-342938.6",
+    "sep_arcsec_max": 0.5,
+    "npts": 9185, "tol_npts": 0,
+    "data_ini": "2006-07-02", "data_fim": "2008-01-19",
+    "n_temporadas": 2,
+    "status_cobertura_por_bloco": "testado",
+    "epoca_bjd_tdb": 2454293.067494, "tol_min": 0.10,
+    "E": -4699,
+    "barra_interna_min": 1.88, "tol_barra": 0.05,
+    "vies_cadeia_min": -2.14, "vies_cadeia_sigma_min": 0.78,
+    "barra_total_min": 2.04, "tol_barra_total": 0.05
+  },
+
+  "teste": {
+    "residuo_no_linear_min": 22.88, "tol_min": 0.20,
+    "sigmas_linear": 11.2, "tol_sigmas": 0.15,
+    "residuo_na_parabola_min": -16.04, "tol_min_par": 0.20,
+    "sigmas_parabola": 7.9, "tol_sigmas_par": 0.15,
+    "parabola_prevista_2007_min": 38.9, "tol_prev": 0.3,
+    "graus_de_liberdade_com_swasp": 2,
+    "veredito_maximo_permitido": "curvatura confirmada; parabola pura rejeitada; terceiro corpo NAO estabelecido"
+  },
+
+  "adversarial": {
+    "_sobre": "deslocar cada epoca 1 sigma na direcao que mais ENFRAQUECE o resultado e reportar o p nesse caso; nao ha expectativa numerica previa - e o primeiro registro",
+    "registrar": ["p_linear_adversarial", "p_parabola_adversarial", "sigmas_linear_adversarial"]
+  }
+}

@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+data/cache/
+data/catalogs/
+data/targetset/
+data/validacao/
+state.db
+paper/*.aux
+paper/*.log
+paper/*.out
+paper/*.bbl
+paper/*.blg
+paper/*.toc
+paper/build.log
