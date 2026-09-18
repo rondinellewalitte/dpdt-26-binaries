@@ -41,6 +41,43 @@ P_CURVATURA = 0.05
 CHI2R_ANTIGO = 2.0      # so para reportar ao lado
 
 
+# Tabela 2: o PRIMEIRO guard que cada um dos 62 nao medidos falhou, lido do registro por alvo (campo `erro`).
+# A ordem das linhas e a da nota; o texto de "Nature" e fixo por categoria. Categoria fora da lista = falha alta.
+GUARDS_TABELA2 = [
+    ("<500", lambda m: "pontos validos" in m, "SuperWASP curve with < 500 valid points after cleaning", "archive depth; structural"),
+    ("cobertura", lambda m: "cobertura por bloco" in m, "Phase coverage of the eclipse not testable in ≥ 1 season block (Section 3.3; a season whose fitted depth is ≤ 0 counts as not testable, Section 3.1)",
+     "archive sampling; recoverable with a second archive"),
+    ("download", lambda m: "veio vazio" in m, "SuperWASP light-curve download returned an empty file in four attempts (a different operation from the cone search of Table 1, step 4)",
+     "archive-side failure; recoverable if the archive serves the file"),
+    ("escada", lambda m: "escada nao fechou" in m, "Cycle count between TESS sectors ambiguous (period ladder did not close)",
+     "local sector coverage; intermediate sectors were added from MAST and none was recovered (Appendix A)"),
+    ("T14", lambda m: "T14 do catalogo inaplicavel" in m, "No applicable eclipse duration in the catalogue (4 NaN; 1 contact-binary width; 1 W UMa)",
+     "catalogue gap; T14 was measured on the TESS curve for five and none was recovered (Appendix A)"),
+]
+
+
+def tabela2():
+    """As linhas da Tabela 2 (markdown) a partir dos 88 registros; confere 62 e que nenhum motivo fica fora das categorias."""
+    contagem = {k: [] for k, *_ in GUARDS_TABELA2}
+    n_ok = 0
+    for p in sorted(BASE.glob("oc__*.json")):
+        x = json.loads(p.read_text(encoding="utf-8"))
+        if x.get("status") == "ok":
+            n_ok += 1
+            continue
+        m = str(x.get("erro", x.get("motivo", "")))
+        cats = [k for k, f, *_ in GUARDS_TABELA2 if f(m)]
+        if len(cats) != 1:
+            raise RuntimeError(f"Tabela 2: TIC {x['tic']} com motivo fora das categorias ({cats}): {m[:120]}")
+        contagem[cats[0]].append(int(x["tic"]))
+    n_falha = sum(len(v) for v in contagem.values())
+    assert n_ok == 26 and n_falha == 62, (n_ok, n_falha)
+    linhas = ["| Reason | N | Nature |", "|---|---|---|"]
+    for k, _, razao, natureza in GUARDS_TABELA2:
+        linhas.append(f"| {razao} | {len(contagem[k])} | {natureza} |")
+    return "\n".join(linhas)
+
+
 def nome_curto(va_nome, simbad_id):
     if isinstance(va_nome, str) and va_nome:
         m = re.match(r"^(V)0*(\d+) ([A-Z][a-z]{2})$", va_nome)
@@ -111,19 +148,79 @@ def _pp(r):
     return f"{fmt_p(r.p_curv)}, {fmt_p(r.p_adv)}{'*' if r.detecta else ''}"
 
 
+CLASSE_CURTA = {"contraditado": "contradicted", "nao contraditado": "not contradicted",
+                "ambiguo": "ambiguous", "LTTE publicado": "published LTTE"}
+
+
+def janela():
+    """O teste de janela (Seccao 5.5) e a sensibilidade ao vies (Seccao 3.4), por alvo.
+
+    so-TESS SEM as epocas do desenho: caso_completo_d9_sem_desenho.parquet;
+    faixa de z entre modelos admitidos, classe e DMD: ruido_admitido_d9.parquet (95%);
+    Delta(dP/dt) por passo de 2,14 min no vies: sensib_vies_26.parquet (diagonal, sigma_v da cadeia).
+    """
+    out = {}
+    try:
+        sd = pd.read_parquet(BASE / "caso_completo_d9_sem_desenho.parquet").set_index("tic")
+        ra = pd.read_parquet(BASE / "ruido_admitido_d9.parquet")
+        ra = ra[ra.nivel == 0.95].set_index("tic")
+        sv = pd.read_parquet(BASE / "sensib_vies_26.parquet")
+        sv = sv[(sv.metodo == "diagonal") & (sv.sigma_v_min == sv.sigma_v_min.min())]
+        piv = sv.pivot(index="tic", columns="delta_min", values="dPdt")
+        col0, col2 = 0.0, -2.14
+        out["dvies"] = {int(t): abs(piv.loc[t, col0] - piv.loc[t, col2]) for t in piv.index}
+        d9 = pd.read_parquet(BASE / "caso_completo_d9.parquet").set_index("tic")   # traz tambem os nao testaveis
+        for t in d9.index:
+            if not bool(d9.loc[t, "testavel"]):    # V Gru: as 4 epocas do cache SAO as do desenho
+                out.setdefault("janela", {})[int(t)] = {"dPdt": None, "s": None, "n": int(d9.loc[t, "n_tess"]),
+                                                        "z_lo": None, "z_hi": None, "classe": "not testable", "dmd": None}
+        for t in sd.index:
+            if not bool(sd.loc[t, "testavel"]):
+                continue
+            if int(t) == 424461577:                # fora da classificacao: z e DMD nao se aplicam
+                out.setdefault("janela", {})[int(t)] = {"dPdt": float(sd.loc[t, "dPdt_sem"]), "s": float(sd.loc[t, "s_sem"]),
+                                                        "n": int(sd.loc[t, "n_tess_sem"]), "z_lo": None, "z_hi": None,
+                                                        "classe": "published LTTE", "dmd": None}
+                continue
+            out.setdefault("janela", {})[int(t)] = {
+                "dPdt": float(sd.loc[t, "dPdt_sem"]), "s": float(sd.loc[t, "s_sem"]), "n": int(sd.loc[t, "n_tess_sem"]),
+                "z_lo": float(ra.loc[t, "z_min"]), "z_hi": float(ra.loc[t, "z_max"]),
+                "classe": CLASSE_CURTA.get(str(ra.loc[t, "classe"]), str(ra.loc[t, "classe"])),
+                "dmd": float(ra.loc[t, "DMD_3sigma_adm"])}
+
+    except FileNotFoundError:
+        return {}
+    return out
+
+
 def md_tabela3(d):
-    R = reinflado() or {}
-    extra = ""
-    if "tess" in R:
-        extra += " | TESS bars +1.0 min yr⁻¹: p_curv, p_adv | TESS bars +2.6: p_curv, p_adv"
-    out = ["| TIC | Name | RA, Dec (J2000, deg) | Tmag | P (d) | N (TESS+SW) | d.o.f. | span (yr) | quadratic coefficient as dP/dt (s yr⁻¹) | χ²_red | p_gof | p_curv | p_adv | class" + extra + " |",
-           "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|" + "---|" * (2 * ("tess" in R))]
+    out = ["| TIC | Name | RA, Dec (J2000, deg) | Tmag | P (d) | N (TESS+SW) | d.o.f. | span (yr) | quadratic coefficient as dP/dt (s yr⁻¹) | χ²_red | p_gof | p_curv | p_adv | class |",
+           "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
     for x in d.itertuples():
-        col = ""
-        if "tess" in R:
-            col += " | " + _pp(R["tess"][(x.TIC, 1.0)]) + " | " + _pp(R["tess"][(x.TIC, 2.6)])
         out.append(f"| {x.TIC} | {x.nome} | {x.ra:.4f}, {x.dec:+.4f} | {x.tmag:.1f} | {x.P:.4f} | {x.n} ({x.nT}+{x.nS}) | {x.dof} | "
-                   f"{x.span:.1f} | {x.dPdt:+.4f} ± {x.s:.4f} | {x.chi2r:.2f} | {fmt_p(x.p_gof)} | {fmt_p(x.p)} | {fmt_p(x.padv)} | {x.classe}{col} |")
+                   f"{x.span:.1f} | {x.dPdt:+.4f} ± {x.s:.4f} | {x.chi2r:.2f} | {fmt_p(x.p_gof)} | {fmt_p(x.p)} | {fmt_p(x.padv)} | {x.classe} |")
+    return "\n".join(out)
+
+
+def md_tabela6(d):
+    """Tabela 6: o teste de janela (Seccao 5.5) e a sensibilidade ao vies (Seccao 3.4), 26 linhas."""
+    J = janela()
+    jan, dv = J.get("janela", {}), J.get("dvies", {})
+    out = ["| TIC | Name | complete block (s yr⁻¹) | N | z (admitted) | class | MDD | Δ per 2.14 min |",
+           "|---|---|---|---|---|---|---|---|"]
+    for x in d.itertuples():
+        w = jan.get(int(x.TIC))
+        if w is None:
+            col = "— | — | — | not in D9 | —"
+        else:
+            bloco = "—" if w["dPdt"] is None else f"{w['dPdt']:+.4f} ± {w['s']:.4f}"
+            if w["z_lo"] is None:
+                zz, dmd = "—", "—"
+            else:
+                zz = f"{w['z_lo']:+.1f}" if abs(w["z_hi"] - w["z_lo"]) < 0.05 else f"{w['z_lo']:+.1f} to {w['z_hi']:+.1f}"
+                dmd = f"{w['dmd']:.4f}"
+            col = f"{bloco} | {w['n'] if w['n'] else '—'} | {zz} | {w['classe']} | {dmd}"
+        out.append(f"| {x.TIC} | {x.nome} | {col} | {dv.get(int(x.TIC), float('nan')):.4f} |")
     return "\n".join(out)
 
 
@@ -207,6 +304,7 @@ if __name__ == "__main__":
     d = tabela3()
     d.to_parquet(BASE / "tabela_26.parquet", index=False)
     t3 = md_tabela3(d)
+    t6 = md_tabela6(d)
     t4, a, b, c_prec = md_tabela4(d)
     inad = d[d.inadequada]
     inad_old = d[d.inadequada_chi2r2]
@@ -234,18 +332,20 @@ if __name__ == "__main__":
         f"{b['abs_med']:.4f} s/yr = {b['abs_med'] / 86400:.2e} d/yr",
         f"Sign test sigma<{SIGMA_PRECISO}: {c_prec['pos']}+/{c_prec['neg']}- p={c_prec['p_sinal']:.2f}; surviving {c_prec['surv']}/{c_prec['n']}",
     ]
-    md = "# Tabelas da nota (geradas por src/tabela_nota.py)\n\n## Tabela 3\n\n" + t3 + "\n\n## Tabela 4\n\n" + t4 + "\n\n## Resumo\n\n" + "\n".join("- " + s for s in resumo) + "\n"
+    t2 = tabela2()
+    md = ("# Tabelas da nota (geradas por src/tabela_nota.py)\n\n## Tabela 2\n\n" + t2 + "\n\n## Tabela 3\n\n" + t3
+          + "\n\n## Tabela 4\n\n" + t4 + "\n\n## Tabela 6\n\n" + t6 + "\n\n## Resumo\n\n" + "\n".join("- " + s for s in resumo) + "\n")
     (config.ROOT / "reports" / "tabelas_nota.md").write_text(md, encoding="utf-8")
     # a nota copia dali, nao digita: os blocos entre marcadores sao substituidos
     nota = config.ROOT / "reports" / "dpdt_note.md"
     if nota.exists() and "--inserir" in sys.argv:
         txt = nota.read_text(encoding="utf-8")
-        for rot, bloco in (("tabela3", t3), ("tabela4", t4)):
+        for rot, bloco in (("tabela2", t2), ("tabela3", t3), ("tabela4", t4), ("tabela6", t6)):
             ini, fim = f"<!-- {rot}:inicio -->", f"<!-- {rot}:fim -->"
             if txt.count(ini) != 1 or txt.count(fim) != 1:
                 raise RuntimeError(f"marcadores {rot} ausentes ou duplicados na nota")
             txt = txt[:txt.index(ini) + len(ini)] + "\n" + bloco + "\n" + txt[txt.index(fim):]
         nota.write_text(txt, encoding="utf-8")
-        print("nota: Tabelas 3 e 4 inseridas entre marcadores")
+        print("nota: Tabelas 2, 3, 4 e 6 inseridas entre marcadores")
     print("\n".join(resumo))
     print(f"\n-> {BASE / 'tabela_26.parquet'} e reports/tabelas_nota.md")

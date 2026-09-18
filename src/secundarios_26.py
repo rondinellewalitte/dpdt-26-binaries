@@ -7,7 +7,7 @@ E o segundo confundidor da familia do V527 Dra, e nunca foi testado.
 
 Como: `oc_lote.epocas_2min` com a semente do catalogo deslocada de P/2 -
 nada mais muda (ancora no setor mais recente, trapezio com o T14 do
-catalogo, barra = max(formal, |t0a - t0b|/sqrt 2 das metades)). O primario e
+catalogo, barra = max(formal, |t0a - t0b|/2 das metades - estado D; era /sqrt 2)). O primario e
 re-extraido pelo mesmo caminho e tem de reproduzir o `pontos` do JSON do
 lote - controle embutido.
 
@@ -24,6 +24,11 @@ compativel com zero; (b) nos 5 com P entre 2 e 4,4 d (126763885, 139256217,
 deriva e a medida que interessa - espero 0 a 2 com deriva significativa;
 (c) alguns secundarios rasos nao mensuraveis - espero <= 5 alvos. Desvio em
 qualquer direcao vai para a nota como esta.
+
+ESTADO D (2026-09-16): barra TESS |a - b| / 2 nos dois minimos. EXPECTATIVA
+antes de rodar (pre-computo das barras gravadas): 5 -> 6 derivas
+significativas (entra 115244268, +1,26 +- 0,50 min/ano); as cinco mantem
+sinal e valor; 359552377 pode passar a informativo, compativel com zero.
 """
 import json
 import sys

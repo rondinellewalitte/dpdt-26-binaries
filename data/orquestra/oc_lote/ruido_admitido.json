@@ -1,0 +1,37 @@
+{
+ "expectativa": "ver git log: commit da expectativa (rodada nove, Passo L: criterio de modelo admitido)",
+ "regra": "modelo admitido: chi2/nu no intervalo de 95% de chi2_nu/nu; classe por consenso entre admitidos; nenhum admitido -> menos rejeitado, marcado; 424461577 fora do teste so-TESS (LTTE publicado)",
+ "posterior_ao_passo_K": true,
+ "usa_apenas_chi2r": true,
+ "A_classes_95": {
+  "329246824": "ambiguo",
+  "392536812": "contraditado",
+  "198408416": "contraditado",
+  "230386284": "nao contraditado",
+  "377253090": "nao contraditado",
+  "390021728": "contraditado",
+  "232634196": "contraditado",
+  "424461577": "LTTE publicado"
+ },
+ "A_contagem": {
+  "contraditado": 4,
+  "nao contraditado": 2,
+  "ambiguo": 1,
+  "LTTE publicado": 1
+ },
+ "B_D11_sobrevivem_95": 7,
+ "B_quais": [
+  144194304,
+  198408416,
+  230386284,
+  232634196,
+  329246824,
+  377253090,
+  392536812
+ ],
+ "B_nucleo_intacto": true,
+ "B_modelo_aplicado": {
+  "GP_A_proprio": 15,
+  "branco_proprio": 11
+ }
+}

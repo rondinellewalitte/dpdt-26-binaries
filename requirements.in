@@ -1,0 +1,12 @@
+numpy<3
+pandas<3
+scipy
+astropy
+lightkurve
+astroquery
+batman-package>=2.5.3
+transitleastsquares
+wotan
+pyarrow
+matplotlib
+tqdm

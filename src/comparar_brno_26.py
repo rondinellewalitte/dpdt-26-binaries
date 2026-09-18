@@ -29,6 +29,18 @@ nao testa. Desvio em qualquer direcao vai para a nota como esta.
 Ressalva de independencia: a base de Brno pode conter minimos derivados do
 TESS por terceiros (o campo "method" nao distingue); o relato conta quantos
 minimos caem depois de 2018,5.
+
+RODADA NO ESTADO B (2026-09-16, quarta rodada - o critico externo achou que a
+5.5 citava os coeficientes do estado A: V564 Dra -0,0199 +- 0,0018 em vez
+de -0,0200 +- 0,0026 da Tabela 3, e os z com o sigma antigo). Nada muda do
+lado de Brno; o nosso dP/dt e sigma passam a ser os da Tabela 3.
+EXPECTATIVA (antes de rodar): z(V564 Dra, registro inteiro) -6,4 -> ~-4,7;
+z(CV Dra) -4,3 -> ~-4,2; BL Dra ~+1,0; V353 Dra ~-1,0; V527 Dra ~-6
+(sigma 0,0038 -> 0,0029 - hmm, aumenta: z ~ -8); na janela: 4 de 4
+continuam com |z| <= 2 e no registro inteiro 2 de 5. Sobreposicao: as
+nossas epocas nao mudaram (t0 iguais), so as barras SuperWASP (maiores) -
+diferencas identicas, z_ponto menores; a mediana das diferencas continua
+~+0,5 min. Vereditos de concordancia inalterados.
 """
 import sys
 from pathlib import Path

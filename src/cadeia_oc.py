@@ -5,7 +5,7 @@ decide se ela vale.
 Tudo aqui ja existia e esta validado: `epocas_142874476.carregar/medir` (epoca
 por setor), `superwasp.carregar` (BJD_TDB), `superwasp.epoca_por_subconjunto`
 (barra do ruido vermelho com gate de cobertura por bloco), o vies da cadeia
-(-2,14 +- 0,78 min, 4 Jupiteres quentes). O que NAO existia era uma funcao que
+(-1,26 +- 0,75 min no estado E; -2,14 +- 0,78 ate o estado D; 4 Jupiteres quentes). O que NAO existia era uma funcao que
 encadeasse isso e devolvesse os componentes - o 11,2 sigma vivia num
 comentario. Antes de rodar em 88 alvos, ela roda no TYC 7024-1046-1 e cada
 componente e comparado com `expectativa_oc_142874476.json`, escrito antes.
@@ -29,8 +29,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import config
 import superwasp as sw
 
-VIES_CADEIA_MIN = -2.14      # run_hj_calib: mediana do O-C de 4 Jupiteres quentes
-VIES_CADEIA_SIG = 0.78
+# ESTADO E (2026-09-17): vies_hj_indep - media ponderada do O-C das mesmas temporadas SuperWASP dos 4 Jupiteres
+# quentes contra efemerides publicadas com dados de solo (Ivshina & Winn 2022 + Bouma et al. 2020 no WASP-4 b):
+# -1,26 +- 0,75 min. Ate o estado D era -2,14 +- 0,78 (run_hj_calib: propagacao TESS-only, que levava o
+# decaimento orbital do WASP-4 b para dentro do vies).
+VIES_CADEIA_MIN = -1.26
+VIES_CADEIA_SIG = 0.75
 
 
 def ajustar(E, t, sig, grau):

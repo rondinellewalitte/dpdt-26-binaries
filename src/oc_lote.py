@@ -56,6 +56,68 @@ nos 88 com os manifestos em cache (mesmos desenhos, barras corrigidas):
     o nulo re-estimando as barras das temporadas simuladas.
   - Sigma epsilon: 6,7 -> ~6,0.
 Desvio em qualquer direcao vai para o humano antes de qualquer outra coisa.
+
+ESTADO D (2026-09-16, quarta rodada, B4 - decisao do autor: corrigir): a barra
+TESS por metades passa de |t0_a - t0_b| / sqrt 2 (desvio-padrao de UMA metade)
+para |t0_a - t0_b| / 2 (erro do ajuste ao setor inteiro). Ver o comentario
+em `epocas_2min`. O mesmo /2 entra em `nulo_barras_reestimadas_26.
+barras_reestimadas` (o gerador do nulo, que `estrutura_swasp_26` e
+`completude_secular_26` importam); `secundarios_26` herda por chamar
+`epocas_2min`. O controle NAO usa metades (barra = espalhamento entre tres
+reducoes) e nao pode mover.
+
+EXPECTATIVA (escrita e commitada ANTES de rodar; pre-computo so de leitura
+dos registros do estado B em scratchpad/pre_estado_d.py):
+  cadeia nos 88:
+  - controle TIC 142874476 (A e B): nao se move. Se mover, foi longe demais.
+  - 26 medidos de 88, os MESMOS 26; Tabela 2 igual (22/23/4/7/6). A escada
+    dos 26 com a barra nova fecha em todos com E identico (pre-computado:
+    tolerancia cai de 4,1-4,8 para 3,2-3,6 min em 4 alvos e ainda fecha);
+    os 7 que falham a escada continuam falhando (tolerancia so encolhe).
+  - barras TESS: 36 das 84 encolhem por 0,71 (as em que as metades mandam);
+    48 inalteradas (formal manda). sP da escada encolhe em ~20 alvos.
+  - epocas SuperWASP movem-se < 0,1 min (a temporada e dobrada com o P da
+    escada, que muda em < 1e-6 d); barras SuperWASP inalteradas.
+  - dP/dt, sigma, p_curv, p_adv, p_gof dos 26 REPRODUZEM barra_tess_metades_26
+    (refit dos registros com a mesma regra) dentro de 0,05 sigma - se nao,
+    ha diferenca de implementacao entre o refit e a cadeia: parar.
+  - curvatura + adversarial: 10 -> 11 (entra TIC 390021728, p_adv 0,013);
+    nenhum sai; D9 = D11 menos os 2 marcados (198388252, 229914020) = 9.
+  - p_gof < 0,05: os mesmos 3; chi2_red mediano 0,67 -> 0,70; agregado
+    1,20 -> ~1,25.
+  - qual_barra_26: TESS 1,02 -> 1,59 (26) e 0,55 -> 0,68 (23); SuperWASP
+    1,35 / 0,73 inalterados.
+  nulo com barras re-estimadas (regra /2 no gerador):
+  - SuperWASP 0,77 inalterado (o gerador SW nao muda; os pesos TESS mudam
+    pouco a alavanca). TESS nos 26: sobe de 0,96 para 1,1-1,6 - a barra /2
+    e sem vies em RMS mas 1/barra^2 tem cauda pesada onde a formal e piso
+    baixo; nos 23 (condicionado): de 0,70 para 0,9-1,3. Medido 1,59 / 0,68
+    deve ficar DENTRO do intervalo 2,5-97,5% do nulo em ambos; se o TESS
+    medido sair acima do 97,5%, escalar (seria excesso real no TESS).
+  - nulo global: mediana chi2_red 0,69 -> 0,70-0,80; agregado 0,87 -> 0,9-1,0;
+    medido 0,70 e ~1,25 nos percentis 30-60% e 85-95%.
+  secundarios_26: 5 -> 6 derivas significativas (entra TIC 115244268,
+    +1,26 +- 0,50 min/ano; pre-computado das barras gravadas); as 5 mantem
+    o sinal e o valor; 359552377 pode passar a informativo (barra da deriva
+    7,3 min/ano), compativel com zero. Cenarios 1,0 e 2,6 de reinflar_tess
+    ficam (declarados).
+  reinflar_tess_26: D11 sobrevivem 1 (232634196) a 1,0 e 0 a 2,6, como
+    antes; 390021728 cai nos dois (barra TESS 4-11 min contra alavanca de
+    4,2 anos).
+  completude_secular_26: A50 mediano 0,015 -> 0,012-0,015 (barra TESS menor
+    fixa melhor o periodo local); supressao inalterada na mediana (e do
+    SuperWASP); falso alarme somado 0,36 -> 0,3-0,5.
+  estrutura_swasp_26: conclusao inalterada (f <= 0,5 nao excluido); P(TESS
+    <= medido | f) muda com o nulo novo - sem previsao numerica.
+  epsilon_26: Sigma epsilon 26 sobe <= 10% (barras TESS menores);
+    Sigma epsilon3 do D9 ~4-5.
+  gls_vies_26: os TESS-carregados nao mudam de veredito; 232634196 idem.
+  literatura_26 / comparar_brno_26: coeficientes movem < 0,3 sigma; z de
+    V564 Dra continua < -4; vereditos de concordancia inalterados.
+  caso_232634196 / previsao_232634196: a mudanca 2019-20 -> 2022 do periodo
+    local fica mais significativa (barras menores); previsao 2027,5:
+    separacao 16-18 min, sigma_quad 1,5-2,2 min.
+  Desvio em qualquer direcao vai para o humano antes de qualquer outra coisa.
 """
 import glob
 import json
@@ -78,6 +140,7 @@ import superwasp_cobertura as sc
 CACHE = Path(config.CACHE) / "oc_2min"
 SAIDA = config.DATA / "orquestra" / "oc_lote"
 CONVENCAO = "parabola ponderada nos aglomerados TESS, avaliada em E do SuperWASP (cadeia_oc.ajustar)"
+BARRA_TESS = "max(formal, |t0_a - t0_b| / 2 das duas metades do setor) - estado D"
 
 
 def _norm(t, f, q):
@@ -162,14 +225,26 @@ def epocas_2min(tic, P0, t14_h, man, t0_catalogo_btjd, span_min=None):
         # assinatura de barra 3x pequena, nao de populacao curva. Mesma regra
         # de `epoca_por_subconjunto`: a maior entre formal e dispersao vale.
         # Aqui o bloco e a METADE do setor (o gap de meio de setor nao e um
-        # corte de 30 d), e a dispersao e |t0_a - t0_b| / sqrt(2).
+        # corte de 30 d). A EPOCA E O AJUSTE DO SETOR INTEIRO, e o erro dela
+        # estimado das duas metades e |t0_a - t0_b| / 2: cada metade tem erro
+        # sigma_h, a diferenca tem sigma_h sqrt 2, e o setor inteiro (media
+        # das metades) tem sigma_h / sqrt 2 = |a - b| / 2. Ate o estado B a
+        # linha dividia por sqrt 2 - o desvio-padrao de UMA METADE dado ao
+        # setor inteiro, sqrt 2 grande onde as metades mandam (36 de 84
+        # epocas dos 26): o espelho do std/sqrt n do SuperWASP, achado por um
+        # critico externo (quarta rodada, B4) e conferido por simulacao com
+        # verdade independente (RMS 1,003 com /2; 1,418 com /sqrt 2). O nulo
+        # com barras re-estimadas nao podia ver: sorteava as metades e
+        # re-estimava pela mesma regra. As duas grandezas ficam gravadas com
+        # nomes distintos: a diferenca crua e a barra que ela implica.
         meio = int(np.searchsorted(t, np.median(t)))
-        disp = np.nan
+        disp = dif = np.nan
         if meio > 100 and len(t) - meio > 100:
             ta, _, _ = ep.medir(t[:meio], f[:meio], P=P0, t14_h=t14_h, semente=t0, span_min=sp)
             tb, _, _ = ep.medir(t[meio:], f[meio:], P=P0, t14_h=t14_h, semente=t0, span_min=sp)
             ka, kb = np.round((ta - t0) / P0), np.round((tb - t0) / P0)
-            disp = abs((ta - ka * P0) - (tb - kb * P0)) * 1440.0 / np.sqrt(2.0)
+            dif = abs((ta - ka * P0) - (tb - kb * P0)) * 1440.0
+            disp = dif / 2.0
         sig_uso = max(float(sig), float(disp)) if np.isfinite(disp) else float(sig)
         if not (np.isfinite(t0) and np.isfinite(sig_uso) and sig_uso > 0):
             # a grade nao fechou delta-chi2 = 1 (barra indefinida) ou a epoca
@@ -180,6 +255,7 @@ def epocas_2min(tic, P0, t14_h, man, t0_catalogo_btjd, span_min=None):
             continue
         linhas.append({"setor": setor, "reducao": "SPOC", "t0_btjd": t0, "sigma_min": sig_uso,
                        "sigma_formal_min": float(sig), "sigma_metades_min": float(disp),
+                       "dif_metades_min": float(dif),
                        "prof_ajustada_ppm": prof * 1e6, "n": len(t), "cadencia_min": cad})
     if len(linhas) < 2:
         raise RuntimeError(f"so {len(linhas)} setor(es) com epoca finita "
@@ -232,8 +308,12 @@ def medir_alvo_lote(tic, ep_df, P0, sourceid, ra, dec, t14_h):
         raise RuntimeError(f"cobertura por bloco: {status}")
     pontos = [{"fonte": "TESS s%d" % int(r.setor), "t0": float(r.t0), "sig_min": float(r.sig_min),
                "sig_formal_min": float(getattr(r, "sig_formal_min", float("nan"))),
-               "sig_metades_min": float(getattr(r, "sig_metades_min", float("nan")))}
+               "sig_metades_min": float(getattr(r, "sig_metades_min", float("nan"))),
+               "dif_metades_min": float(getattr(r, "dif_metades_min", float("nan")))}
               for r in ag.itertuples()]
+    # a relacao entre as duas grandezas gravadas e afirmada, nao suposta
+    for q in pontos:
+        assert not np.isfinite(q["dif_metades_min"]) or abs(q["sig_metades_min"] - q["dif_metades_min"] / 2.0) < 1e-9, q
     # a dispersao ENTRE temporadas e a medida do ruido vermelho; cada temporada
     # entra com a maior entre a formal dela e essa dispersao. A dispersao de
     # UMA temporada e std(desvios) - `dispersao_entre_blocos_min`, posta em
@@ -272,6 +352,7 @@ def medir_alvo_lote(tic, ep_df, P0, sourceid, ra, dec, t14_h):
     n = len(pt)
     dof = n - 3
     res = {"tic": tic, "P_ref_d": P0, "P_escada_d": P_j, "sP_escada_d": sP_j,
+           "barra_tess": BARRA_TESS,
            "n_pontos": n, "n_aglomerados_tess": k, "n_temporadas_swasp": len(subs), "dof": dof,
            "pontos": pt.assign(res_linear_min=rl * 1440).to_dict("records"),
            "linear": {"chi2": chi2l, "dof": n - 2},
@@ -356,7 +437,8 @@ def linha_resumo(res):
 def controles():
     """A e B, e os dois tem que passar antes de qualquer alvo novo."""
     import comparar_oc as C
-    exp = json.load(open(config.DATA / "orquestra" / "expectativa_oc_142874476_v2.json", encoding="utf-8"))
+    # v3 = v2 com os campos que carregam o vies da cadeia propagados por algebra para o estado E (-1,26 +- 0,75); ver _sobre
+    exp = json.load(open(config.DATA / "orquestra" / "expectativa_oc_142874476_v3.json", encoding="utf-8"))
     ra, dec = sc._coord_do_id(exp["superwasp"]["sourceid"])
 
     # A: a cadeia compartilhada com as epocas ESPECIFICAS do controle

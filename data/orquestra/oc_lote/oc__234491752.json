@@ -2,6 +2,6 @@
  "tic": 234491752,
  "status": "falha",
  "erro": "FALHA [superwasp]: 1SWASP J003713.39-634912.4 ficou com 342 pontos validos de 346",
- "traceback": "res = medir_alvo_lote(tic, ep_df, float(r.period_d), r.sourceid,\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Rondinelle\\PROJETOS\\nasa_discover\\src\\oc_lote.py\", line 225, in medir_alvo_lote\n    t, f, sig_mad = sw.carregar(sourceid, ra, dec)\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Rondinelle\\PROJETOS\\nasa_discover\\src\\superwasp.py\", line 120, in carregar\n    raise RuntimeError(\"FALHA [superwasp]: %s ficou com %d pontos validos de \"\nRuntimeError: FALHA [superwasp]: 1SWASP J003713.39-634912.4 ficou com 342 pontos validos de 346\n",
- "segundos": 6.488225221633911
+ "traceback": "res = medir_alvo_lote(tic, ep_df, float(r.period_d), r.sourceid,\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Rondinelle\\PROJETOS\\nasa_discover\\src\\oc_lote.py\", line 301, in medir_alvo_lote\n    t, f, sig_mad = sw.carregar(sourceid, ra, dec)\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Rondinelle\\PROJETOS\\nasa_discover\\src\\superwasp.py\", line 120, in carregar\n    raise RuntimeError(\"FALHA [superwasp]: %s ficou com %d pontos validos de \"\nRuntimeError: FALHA [superwasp]: 1SWASP J003713.39-634912.4 ficou com 342 pontos validos de 346\n",
+ "segundos": 7.858354091644287
 }

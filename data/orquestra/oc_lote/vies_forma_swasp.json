@@ -1,0 +1,96 @@
+{
+ "expectativa_commit": "a9088a8",
+ "n_tarefas_ok": 56,
+ "erros": [],
+ "formas": {
+  "contato": {
+   "n_instaveis": 3,
+   "instaveis": [
+    "139256217",
+    "229476285",
+    "359552377"
+   ],
+   "vies_mediano_das_curvas_estaveis": -0.12473948299884796,
+   "media_dos_medianos_estaveis": -0.14579021736331607,
+   "sd_dos_medianos_estaveis": 1.0287920606789054,
+   "n_com_vies_acima_0.5": 5,
+   "n_com_vies_acima_1": 4,
+   "curvas_vies_acima_1": {
+    "126763885": -2.08,
+    "126945917": 2.92,
+    "224605072": -1.18,
+    "329248002": -2.74
+   },
+   "n_curvas": 23,
+   "vies_medio_das_curvas": -0.08165610141323851,
+   "sd_entre_curvas": 1.0533684511953132,
+   "ic95_media": 0.4304993105589102,
+   "mediana": -0.07127499323569701,
+   "max_abs": 3.055854715704918,
+   "sd_realizacoes_mediana": 1.4630018340947024,
+   "razao_disp_sint_real_mediana": 0.5198237715168413,
+   "dif_vs_transito_min": -0.23661249681659366,
+   "dif_ic95": [
+    -0.7952507099480896,
+    0.34533897406704994
+   ]
+  },
+  "destacado": {
+   "n_instaveis": 2,
+   "instaveis": [
+    "139256217",
+    "359552377"
+   ],
+   "vies_mediano_das_curvas_estaveis": -0.04368044435977936,
+   "media_dos_medianos_estaveis": 0.00040104612708091736,
+   "sd_dos_medianos_estaveis": 0.8547757881016891,
+   "n_com_vies_acima_0.5": 4,
+   "n_com_vies_acima_1": 2,
+   "curvas_vies_acima_1": {
+    "126945917": -2.46,
+    "232634196": 2.95
+   },
+   "n_curvas": 24,
+   "vies_medio_das_curvas": 0.025360754895955323,
+   "sd_entre_curvas": 0.8152808926261644,
+   "ic95_media": 0.32618029004923427,
+   "mediana": -0.011701004058122636,
+   "max_abs": 2.880517288148403,
+   "sd_realizacoes_mediana": 0.8120516312849717,
+   "razao_disp_sint_real_mediana": 0.37583896611484835,
+   "dif_vs_transito_min": -0.09042123332619667,
+   "dif_ic95": [
+    -0.5922262910753489,
+    0.4222551818238563
+   ]
+  },
+  "transito": {
+   "n_instaveis": 0,
+   "instaveis": [],
+   "vies_mediano_das_curvas_estaveis": 0.09280292317271233,
+   "media_dos_medianos_estaveis": 0.09082227945327759,
+   "sd_dos_medianos_estaveis": 0.4535252625728491,
+   "n_com_vies_acima_0.5": 1,
+   "n_com_vies_acima_1": 0,
+   "curvas_vies_acima_1": {},
+   "n_curvas": 4,
+   "vies_medio_das_curvas": 0.13713554162532093,
+   "sd_entre_curvas": 0.5341460236617656,
+   "ic95_media": 0.5234631031885303,
+   "mediana": 0.13961453206837177,
+   "max_abs": 0.7718340459465981,
+   "sd_realizacoes_mediana": 2.3361298570198508,
+   "razao_disp_sint_real_mediana": 2.264095550388929
+  }
+ },
+ "hj_ponderado": {
+  "vies_sintetico_min": -0.09631560163023395,
+  "p2.5": -2.824543177733645,
+  "p97.5": 2.3925063883528006,
+  "sd_realizacoes": 1.3700062155643518,
+  "oc_real_ponderado_min": -2.140411205927338,
+  "vies_cadeia_min": -2.14,
+  "sig_cadeia_min": 0.78,
+  "reproduz_2_14": false
+ }
+}

@@ -1,7 +1,7 @@
 {
  "tic": 159638876,
  "status": "falha",
- "erro": "escada nao fechou no TESS (tolerancia 58.3 min = 3 x barra mediana): contagem de ciclos ambigua",
- "traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\Rondinelle\\PROJETOS\\nasa_discover\\src\\oc_lote.py\", line 323, in rodar_um\n    res = medir_alvo_lote(tic, ep_df, float(r.period_d), r.sourceid,\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Rondinelle\\PROJETOS\\nasa_discover\\src\\oc_lote.py\", line 220, in medir_alvo_lote\n    raise RuntimeError(f\"escada nao fechou no TESS (tolerancia {tol:.1f} min = 3 x barra mediana): \"\nRuntimeError: escada nao fechou no TESS (tolerancia 58.3 min = 3 x barra mediana): contagem de ciclos ambigua\n",
- "segundos": 5.9061315059661865
+ "erro": "escada nao fechou no TESS (tolerancia 41.2 min = 3 x barra mediana): contagem de ciclos ambigua",
+ "traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\Rondinelle\\PROJETOS\\nasa_discover\\src\\oc_lote.py\", line 404, in rodar_um\n    res = medir_alvo_lote(tic, ep_df, float(r.period_d), r.sourceid,\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Rondinelle\\PROJETOS\\nasa_discover\\src\\oc_lote.py\", line 296, in medir_alvo_lote\n    raise RuntimeError(f\"escada nao fechou no TESS (tolerancia {tol:.1f} min = 3 x barra mediana): \"\nRuntimeError: escada nao fechou no TESS (tolerancia 41.2 min = 3 x barra mediana): contagem de ciclos ambigua\n",
+ "segundos": 22.010271072387695
 }

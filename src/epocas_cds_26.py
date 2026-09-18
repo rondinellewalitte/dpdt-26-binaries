@@ -44,12 +44,30 @@ if __name__ == "__main__":
     q26 = pd.read_parquet(BASE / "qual_barra_26.parquet")
     nT, nS = int(d.source.str.startswith("TESS").sum()), int((~d.source.str.startswith("TESS")).sum())
     assert (nT, nS) == (int((q26.fonte == "TESS").sum()), int((q26.fonte == "SuperWASP").sum())), (nT, nS, q26.fonte.value_counts().to_dict())
-    cab = ("# Primary-minimum epochs of the 26 targets (this paper, Sect. 3.1-3.3). One row per epoch entering the fits of Table 3.\n"
-           "# TIC: TESS Input Catalog number. source: TESS sector (2-min cadence, epoch of the sector; two halves give sigma_halves_min)\n"
-           "#   or SuperWASP season (label = first JD of the season). E: cycle number counted from the first TESS sector of the target.\n"
-           "# BJD_TDB: time of primary minimum, barycentric TDB. sigma_min: bar used in the fits (min) = max(formal, halves) for TESS,\n"
-           "#   hypot(max(formal, season dispersion), 0.78) for SuperWASP (Sect. 3.3-3.4; SuperWASP epochs have the chain bias of -2.14 min removed, i.e. +2.14 min applied to the raw fit).\n"
-           "# sigma_formal_min: formal (photon-noise) error; sigma_halves_min: |t_a - t_b|/sqrt 2 of the two sector halves (TESS only);\n"
-           "#   season_dispersion_min: std (ddof = 1) of the target's season deviations (SuperWASP only). P_d: period of the ladder (d).\n")
+    # o cabecalho vem das constantes da cadeia (nao de texto digitado): com o vies em
+    # cadeia_oc.py, trocar o estado nao deixa o cabecalho para tras (rodada onze)
+    import cadeia_oc as co
+    vies, sigv = co.VIES_CADEIA_MIN, co.VIES_CADEIA_SIG
+    cab = (
+        "# Primary-minimum epochs of the 26 targets of Walitte (this paper), Sect. 3.1-3.3.\n"
+        "# One row per epoch entering the quadratic fits of Table 3; 145 rows, 26 targets.\n"
+        "#\n"
+        "# Columns (unit in brackets; an empty field means the quantity does not apply to that row):\n"
+        "#   TIC                    [---] TESS Input Catalog identifier\n"
+        "#   source                 [---] TESS sector (2-min cadence; epoch of the whole sector) or SuperWASP season\n"
+        "#                                (label = first JD of the season)\n"
+        "#   E                      [ct]  cycle number, counted from the first TESS sector of the target\n"
+        "#   BJD_TDB                [d]   time of primary minimum, barycentric Julian date in the TDB scale\n"
+        "#   sigma_min              [min] uncertainty used in the fits\n"
+        "#   sigma_formal_min       [min] formal (photon-noise) uncertainty, from Delta chi2 = 1\n"
+        "#   sigma_halves_min       [min] |t_a - t_b|/2 of the two halves of the sector (TESS rows only)\n"
+        "#   season_dispersion_min  [min] standard deviation (ddof = 1) of the target's season deviations (SuperWASP rows only)\n"
+        "#   P_d                    [d]   period of the ladder used to count cycles\n"
+        "#\n"
+        "# sigma_min = max(sigma_formal, sigma_halves) for TESS rows and\n"
+        f"#   hypot(max(sigma_formal, season_dispersion), {sigv:.2f} min) for SuperWASP rows (Sect. 3.3-3.4).\n"
+        f"# The SuperWASP epochs already have the chain bias of {vies:+.2f} min removed, i.e. {-vies:+.2f} min applied to the raw fit;\n"
+        f"#   the {sigv:.2f} min is the uncertainty of that bias, added in quadrature.\n"
+        "# Times are as produced by the chain: HJD_UTC converted to BJD_TDB for SuperWASP, BTJD + 2457000 for TESS.\n")
     OUT.write_text(cab + d.to_csv(index=False, float_format="%.6f", lineterminator="\n"), encoding="utf-8")
     print(f"{len(d)} epocas ({nT} TESS + {nS} SuperWASP) de {d.TIC.nunique()} alvos -> {OUT}")

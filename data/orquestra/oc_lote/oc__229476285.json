@@ -3,6 +3,7 @@
  "P_ref_d": 1.0964623,
  "P_escada_d": 1.0964392534736485,
  "sP_escada_d": 2.2775790823529898e-07,
+ "barra_tess": "max(formal, |t0_a - t0_b| / 2 das duas metades do setor) - estado D",
  "n_pontos": 5,
  "n_aglomerados_tess": 3,
  "n_temporadas_swasp": 2,
@@ -10,52 +11,57 @@
  "pontos": [
   {
    "fonte": "SuperWASP 2454633",
-   "t0": -2366.8105359970077,
-   "sig_min": 358.6544574045225,
+   "t0": -2366.811147108119,
+   "sig_min": 358.6543934153497,
    "sig_formal_min": 6.90756730735302,
    "sig_metades_min": NaN,
+   "dif_metades_min": NaN,
    "E": -3851,
-   "res_linear_min": -23.523951656970894
+   "res_linear_min": -24.403923734716955
   },
   {
    "fonte": "SuperWASP 2454671",
-   "t0": -2329.179370268569,
-   "sig_min": 358.6544574045225,
+   "t0": -2329.17998137968,
+   "sig_min": 358.6543934153497,
    "sig_formal_min": 6.90756730735302,
    "sig_metades_min": NaN,
+   "dif_metades_min": NaN,
    "E": -3817,
-   "res_linear_min": 483.68890326004475
+   "res_linear_min": 482.8089309675124
   },
   {
    "fonte": "TESS s20",
    "t0": 1855.5932903682549,
    "sig_min": 0.4815662421970046,
    "sig_formal_min": 0.4815662421970046,
-   "sig_metades_min": 0.2553890665281391,
+   "sig_metades_min": 0.18058734078294947,
+   "dif_metades_min": NaN,
    "E": 0,
-   "res_linear_min": -0.1014217673582607
+   "res_linear_min": -0.10141821290744701
   },
   {
    "fonte": "TESS s21",
    "t0": 1884.1008085367528,
    "sig_min": 0.3009789012503461,
    "sig_formal_min": 0.3009789012503461,
-   "sig_metades_min": 0.0851296889198862,
+   "sig_metades_min": 0.06019578031555284,
+   "dif_metades_min": NaN,
    "E": 26,
-   "res_linear_min": 0.039133666577981785
+   "res_linear_min": 0.03913705666491296
   },
   {
    "fonte": "TESS s75",
    "t0": 3354.425818894114,
    "sig_min": 0.36117468189331703,
    "sig_formal_min": 0.36117468189331703,
-   "sig_metades_min": 0.2553890667596586,
+   "sig_metades_min": 0.18058734094665851,
+   "dif_metades_min": NaN,
    "E": 1367,
-   "res_linear_min": 0.00023061038518790156
+   "res_linear_min": 0.00022551510483026505
   }
  ],
  "linear": {
-  "chi2": 1.884342085791687,
+  "chi2": 1.8780586435131765,
   "dof": 3
  },
  "superwasp": {
@@ -93,28 +99,28 @@
   ]
  },
  "parabola": {
-  "chi2": 1.5779996090518744,
+  "chi2": 1.5747256702311776,
   "dof": 2,
-  "Q_d_por_ciclo2": 3.821543816308646e-09,
-  "sQ": 6.904547717521719e-09,
-  "dPdt_s_por_ano": 0.21998254943075177,
-  "sdPdt_s_por_ano": 0.3974519415647684,
+  "Q_d_por_ciclo2": 3.802725688804669e-09,
+  "sQ": 6.904546957420961e-09,
+  "dPdt_s_por_ano": 0.21889930667263618,
+  "sdPdt_s_por_ano": 0.3974518978104872,
   "residuos_min": [
-   -134.628,
-   374.279,
-   -0.24,
+   -134.961,
+   373.938,
+   -0.239,
    0.095,
    -0.002
   ]
  },
- "delta_chi2": 0.30634247673981263,
- "p_curvatura": 0.5799333085522396,
+ "delta_chi2": 0.30333297328199893,
+ "p_curvatura": 0.5818004512831665,
  "classe": "testado",
  "adversarial": {
-  "delta_chi2_base": 0.30634247673981263,
-  "p_base": 0.5799333085522396,
-  "delta_chi2_adversarial": 0.0896999370153786,
-  "p_adversarial": 0.7645589706466318,
+  "delta_chi2_base": 0.30333297328199893,
+  "p_base": 0.5818004512831665,
+  "delta_chi2_adversarial": 0.09133982587429479,
+  "p_adversarial": 0.7624807048710469,
   "deslocamentos_min": [
    -358.654,
    358.654,
@@ -125,13 +131,13 @@
  },
  "teste_predizer_conferir": {
   "E_swasp": -3834,
-  "barra_total_min": 253.60759867966536,
-  "residuo_no_linear_min": -21.099030266558984,
-  "sigmas_linear": -0.08319557606477482,
-  "residuo_na_parabola_min": 58.56124611127656,
-  "sigmas_parabola": 0.2309128212883161
+  "barra_total_min": 253.6075081855153,
+  "residuo_no_linear_min": -21.979030266558983,
+  "sigmas_linear": -0.08666553456485682,
+  "residuo_na_parabola_min": 57.68124611127656,
+  "sigmas_parabola": 0.22744297487076923
  },
  "convencao_parabola": "parabola ponderada nos aglomerados TESS, avaliada em E do SuperWASP (cadeia_oc.ajustar)",
  "status": "ok",
- "segundos": 7.896862506866455
+ "segundos": 10.122360467910767
 }

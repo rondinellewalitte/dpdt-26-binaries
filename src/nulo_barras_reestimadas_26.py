@@ -63,6 +63,27 @@ EXPECTATIVA (escrita e commitada antes de rodar):
     consistent with its null; TESS below it", e o abstract e a Secao 6 seguem.
   - Sanidade: a mesma realizacao sem corte reproduz a distribuicao acima
     (0,77 / 0,96) dentro do erro de Monte Carlo.
+QUARTA RODADA (critico externo, B1 e B2). B1: "z^2 = 0,5 com h = 0,5 da
+razao 1, nao 0,77" - conferido em diagnostico (500 realizacoes, mesma
+maquinaria): SEM os pisos o nulo SW e 1,08 (mediana; media 1,23) e o TESS
+diverge (5,9: |a - b|/sqrt2 perto de zero faz z ilimitado); com so o piso
+formal SW 0,89, so o hypot 0,78 0,86, com todos 0,78. A explicacao do
+"z^2 = 0,5 por construcao" na nota estava ERRADA como causa do 0,77: a
+co-estimacao pura com correcao de alavanca da 1; sao os PISOS (max com a
+formal, hypot 0,78, max com a formal no TESS) que deflacionam - quando a
+dispersao de 2-3 amostras cai abaixo do piso a barra e o piso e o residuo
+nao. B2: a 5.2.1 e a Secao 6 comparam a mediana do chi2_red (0,67) e o
+agregado (80,1/67 = 1,20, p = 0,13) com o nulo de barras CONHECIDAS (0,73;
+chi2 de 67 gl). Aqui o nulo co-estimado passa a gravar, por realizacao, a
+mediana do chi2/gl dos 26 e o agregado Sigma chi2 / 67.
+EXPECTATIVA (antes de rodar): mediana do chi2_red sob o nulo co-estimado
+0,55-0,65 (abaixo dos 0,73 de barras conhecidas); agregado 0,85-0,92
+(~0,77 x 35,3 + 0,96 x 31,7 = 57,6 sobre 67); o 0,67 medido fica no
+percentil 60-85%; o 1,20 medido fica acima do percentil 97% - i.e. o
+agregado E excesso contra o nulo certo, e e o excesso dos tres marcados
+(Sigma z2 = 13,3 + 11,5 + ... dos 47,8). A frase "as barras descrevem os
+residuos" da 5.2.1/Secao 6 passa a ser feita contra este nulo.
+
 RESULTADO (rodado depois): marcados 0,83 por realizacao, P(>= 3) = 0,057; SW
 condicionado 0,77 (0,63-0,92), medido 0,73 no percentil 30%; TESS condicionado
 0,70 (0,37-1,08), medido 0,55 no percentil 23%. DESVIO: o nulo TESS cai muito
@@ -71,6 +92,11 @@ realizacoes em que uma barra TESS co-estimada de duas metades saiu pequena; o
 corte tira a cauda pesada do TESS (diagnostico abaixo: fracao do z^2 TESS nos
 marcados). A leitura ("nos 23 nenhum dos dois conjuntos mostra excesso") nao
 muda; o percentil do TESS sobe de 13% (nulo errado) para 23% (nulo certo).
+
+ESTADO D (2026-09-16): o gerador passa a |a - b| / 2 (regra da cadeia no estado
+D). EXPECTATIVA antes de rodar - em oc_lote.py (bloco ESTADO D): SuperWASP
+0,77 inalterado; TESS 0,96 -> 1,1-1,6 nos 26 e 0,70 -> 0,9-1,3 nos 23; global
+mediana 0,69 -> 0,70-0,80, agregado 0,87 -> 0,9-1,0.
 """
 import json
 import sys
@@ -116,11 +142,13 @@ def barras_reestimadas(d, r, rng):
     if len(isw) >= 2:
         disp = float(np.std(r[isw], ddof=1))
         sig[isw] = np.hypot(np.maximum(formal[isw], disp), co.VIES_CADEIA_SIG)
-    # TESS: |a - b| / sqrt 2 de duas metades (cada metade com sigma sqrt 2 x a do setor), max formal
+    # TESS: |a - b| / 2 de duas metades (cada metade com sigma sqrt 2 x a do setor), max formal - a regra
+    # do estado D (oc_lote.epocas_2min). Ate o estado B era / sqrt 2 dos dois lados (gerador e cadeia), e por
+    # isso o nulo nao via o erro: sorteava as metades e re-estimava pela mesma regra.
     itess = np.where(tess)[0]
     a = rng.normal(0, d["sig"][itess] * np.sqrt(2))
     b = rng.normal(0, d["sig"][itess] * np.sqrt(2))
-    sig[itess] = np.maximum(formal[itess], np.abs(a - b) / np.sqrt(2))
+    sig[itess] = np.maximum(formal[itess], np.abs(a - b) / 2.0)
     return sig
 
 
@@ -145,6 +173,21 @@ def realizacao(des, rng, reestimar=True, vies_comum=False):
         zT.extend(z[d["tess"]]); hT.extend(h[d["tess"]]); zS.extend(z[~d["tess"]]); hS.extend(h[~d["tess"]])
     zT, hT, zS, hS = map(np.array, (zT, hT, zS, hS))
     return (zT ** 2).sum() / (1 - hT).sum(), (zS ** 2).sum() / (1 - hS).sum()
+
+
+def realizacao_global(des, rng):
+    """Uma realizacao do nulo re-estimado: mediana do chi2/gl por alvo e o agregado Sigma chi2 / Sigma gl (67) -
+    o que a 5.2.1 compara com 0,73 e 1,20 assumindo barras conhecidas."""
+    chi2r, chi2, dof = [], 0.0, 0
+    for d in des:
+        r = rng.normal(0, d["sig"])
+        sig = barras_reestimadas(d, r, rng)
+        w = 1 / sig
+        X = np.vstack([np.ones_like(d["E"]), d["E"], d["E"] ** 2]).T
+        beta, *_ = np.linalg.lstsq(X * w[:, None], r * w, rcond=None)
+        c2 = float((((r - X @ beta) / sig) ** 2).sum()); k = len(d["E"]) - 3
+        chi2r.append(c2 / k); chi2 += c2; dof += k
+    return float(np.median(chi2r)), chi2 / dof
 
 
 def realizacao_condicionada(des, rng, p_corte=0.05):
@@ -183,7 +226,7 @@ if __name__ == "__main__":
     for fonte in ("TESS", "SuperWASP"):
         g = q[q.fonte == fonte]
         medido[fonte] = float((g.z ** 2).sum() / (1 - g.h).sum())
-    print(f"medido (estado B): SuperWASP {medido['SuperWASP']:.2f}, TESS {medido['TESS']:.2f}")
+    print(f"medido (qual_barra_26 do estado corrente): SuperWASP {medido['SuperWASP']:.2f}, TESS {medido['TESS']:.2f}")
     rng = np.random.default_rng(SEMENTE)
     linhas = []
     for modo, reest, comum in (("barras fixas (como vies_alavanca)", False, False), ("barras RE-ESTIMADAS (como o pipeline)", True, False),
@@ -230,3 +273,17 @@ if __name__ == "__main__":
                            f"{rot}_com_p75": np.percentile(f1, 75), f"{rot}_medido_23": m, f"{rot}_com_pct": pct1})
     pd.DataFrame(linhas2).to_parquet(BASE / "nulo_condicionado_26.parquet", index=False)
     print(f"  -> {BASE / 'nulo_condicionado_26.parquet'}")
+
+    # ---- quarta rodada, B2: mediana do chi2_red e agregado sob o nulo co-estimado ----
+    med_chi2r = float(t26.chi2r.median()); agreg = float(t26.chi2.sum() / t26.dof.sum())
+    rng = np.random.default_rng(SEMENTE + 2)
+    G = np.array([realizacao_global(des, rng) for _ in range(N_SIM)])
+    pm, pa = float((G[:, 0] <= med_chi2r).mean()), float((G[:, 1] <= agreg).mean())
+    print(f"\n== nulo co-estimado para a 5.2.1 (expectativa: mediana 0,55-0,65, agregado 0,85-0,92; medidos no percentil 60-85% e > 97%)")
+    print(f"  mediana do chi2_red: nulo {G[:, 0].mean():.2f} ({np.percentile(G[:, 0], 2.5):.2f}-{np.percentile(G[:, 0], 97.5):.2f}); medido {med_chi2r:.2f} no percentil {pm:.0%}")
+    print(f"  agregado Sigma chi2 / {int(t26.dof.sum())}: nulo {G[:, 1].mean():.2f} ({np.percentile(G[:, 1], 2.5):.2f}-{np.percentile(G[:, 1], 97.5):.2f}); medido {agreg:.2f} no percentil {pa:.0%}")
+    pd.DataFrame([{"mediana_chi2r_nulo": G[:, 0].mean(), "mediana_chi2r_p2.5": np.percentile(G[:, 0], 2.5), "mediana_chi2r_p97.5": np.percentile(G[:, 0], 97.5),
+                   "mediana_chi2r_medida": med_chi2r, "pct_mediana": pm, "agregado_nulo": G[:, 1].mean(), "agregado_p2.5": np.percentile(G[:, 1], 2.5),
+                   "agregado_p97.5": np.percentile(G[:, 1], 97.5), "agregado_medido": agreg, "pct_agregado": pa, "dof": int(t26.dof.sum())}]
+                 ).to_parquet(BASE / "nulo_global_26.parquet", index=False)
+    print(f"  -> {BASE / 'nulo_global_26.parquet'}")

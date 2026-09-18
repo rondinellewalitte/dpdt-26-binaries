@@ -1,8 +1,9 @@
 {
  "tic": 115244268,
  "P_ref_d": 2.0089279,
- "P_escada_d": 2.009000644073494,
- "sP_escada_d": 3.774111191341871e-07,
+ "P_escada_d": 2.009000643482517,
+ "sP_escada_d": 3.0728204174714905e-07,
+ "barra_tess": "max(formal, |t0_a - t0_b| / 2 das duas metades do setor) - estado D",
  "n_pontos": 5,
  "n_aglomerados_tess": 3,
  "n_temporadas_swasp": 2,
@@ -10,39 +11,43 @@
  "pontos": [
   {
    "fonte": "SuperWASP 2453939",
-   "t0": -3061.148303424795,
-   "sig_min": 2.429927736690217,
+   "t0": -3061.1489130285604,
+   "sig_min": 2.4204645846482533,
    "sig_formal_min": 1.8623435497283936,
    "sig_metades_min": NaN,
+   "dif_metades_min": NaN,
    "E": -2543,
-   "res_linear_min": 5.343797809327953
+   "res_linear_min": 5.827163353096694
   },
   {
    "fonte": "SuperWASP 2454319",
-   "t0": -2681.449441820704,
-   "sig_min": 2.429927736690217,
+   "t0": -2681.4500515362283,
+   "sig_min": 2.4204645846482533,
    "sig_formal_min": 1.4645615592598915,
    "sig_metades_min": NaN,
+   "dif_metades_min": NaN,
    "E": -2354,
-   "res_linear_min": 2.3224054054298904
+   "res_linear_min": 2.736836869153194
   },
   {
    "fonte": "TESS s27",
    "t0": 2047.7340694263946,
-   "sig_min": 0.8233371828154438,
+   "sig_min": 0.5821873051718285,
    "sig_formal_min": 0.2495088451905758,
-   "sig_metades_min": 0.8233371828154438,
+   "sig_metades_min": 0.5821873051718285,
+   "dif_metades_min": NaN,
    "E": 0,
-   "res_linear_min": -0.5402813334512757
+   "res_linear_min": -0.10443086601299001
   },
   {
    "fonte": "TESS s28",
    "t0": 2073.8505941798117,
-   "sig_min": 0.5880979881552818,
+   "sig_min": 0.4158480754267657,
    "sig_formal_min": 0.3326784601449617,
-   "sig_metades_min": 0.5880979881552818,
+   "sig_metades_min": 0.4158480754267657,
+   "dif_metades_min": NaN,
    "E": 13,
-   "res_linear_min": -1.220654031203594
+   "res_linear_min": -0.7895339919923572
   },
   {
    "fonte": "TESS s105",
@@ -50,12 +55,13 @@
    "sig_min": 0.3326784598175436,
    "sig_formal_min": 0.3326784598175436,
    "sig_metades_min": 0.0,
+   "dif_metades_min": NaN,
    "E": 1081,
-   "res_linear_min": 0.3351230497355573
+   "res_linear_min": 0.37762023392133415
   }
  ],
  "linear": {
-  "chi2": 11.503221492918069,
+  "chi2": 11.9996790974566,
   "dof": 3
  },
  "superwasp": {
@@ -93,45 +99,45 @@
   ]
  },
  "parabola": {
-  "chi2": 0.8755588499057786,
+  "chi2": 1.3839430998044795,
   "dof": 2,
-  "Q_d_por_ciclo2": 6.378826685435321e-10,
-  "sQ": 1.9566890585080597e-10,
-  "dPdt_s_por_ano": 0.020039860276015883,
-  "sdPdt_s_por_ano": 0.006147176788114065,
+  "Q_d_por_ciclo2": 5.667739559360586e-10,
+  "sQ": 1.7395411673164562e-10,
+  "dPdt_s_por_ano": 0.017805893542018086,
+  "sdPdt_s_por_ano": 0.005464980264669938,
   "residuos_min": [
-   1.033,
-   -1.184,
-   0.463,
-   -0.221,
-   -0.002
+   1.084,
+   -1.249,
+   0.458,
+   -0.227,
+   -0.001
   ]
  },
- "delta_chi2": 10.62766264301229,
- "p_curvatura": 0.0011140843978976963,
+ "delta_chi2": 10.61573599765212,
+ "p_curvatura": 0.0011212931393593608,
  "classe": "testado",
  "adversarial": {
-  "delta_chi2_base": 10.62766264301229,
-  "p_base": 0.0011140843978976963,
-  "delta_chi2_adversarial": 1.139498786692228,
-  "p_adversarial": 0.2857582613160451,
+  "delta_chi2_base": 10.61573599765212,
+  "p_base": 0.0011212931393593608,
+  "delta_chi2_adversarial": 1.1871735264733538,
+  "p_adversarial": 0.275900431755282,
   "deslocamentos_min": [
-   -2.43,
-   -2.43,
-   0.823,
-   0.588,
+   -2.42,
+   -2.42,
+   0.582,
+   0.416,
    -0.333
   ]
  },
  "teste_predizer_conferir": {
   "E_swasp": -2446,
-  "barra_total_min": 1.8045704205622513,
-  "residuo_no_linear_min": 7.7812744983390445,
-  "sigmas_linear": 4.311981627136849,
-  "residuo_na_parabola_min": -423.01679290067057,
-  "sigmas_parabola": 234.4141232066028
+  "barra_total_min": 1.7918075797273043,
+  "residuo_no_linear_min": 6.9012737413484135,
+  "sigmas_linear": 3.8515707933319048,
+  "residuo_na_parabola_min": -423.8947048088105,
+  "sigmas_parabola": 236.57378705436838
  },
  "convencao_parabola": "parabola ponderada nos aglomerados TESS, avaliada em E do SuperWASP (cadeia_oc.ajustar)",
  "status": "ok",
- "segundos": 26.029160261154175
+ "segundos": 10.259634971618652
 }

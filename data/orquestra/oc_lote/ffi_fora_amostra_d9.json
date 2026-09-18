@@ -1,0 +1,123 @@
+{
+ "corte_setor": 86,
+ "gp": {
+  "A_min": 0.8353015855699777,
+  "tau_c_d": 67.69887319636337
+ },
+ "classe_I": {
+  "329246824": "estavel",
+  "392536812": "estavel",
+  "230386284": "estavel",
+  "377253090": "estavel",
+  "198408416": "ambiguo",
+  "390021728": "contraditado",
+  "232634196": "contraditado",
+  "424461577": "contraditado"
+ },
+ "inventario": [
+  {
+   "tic": 329246824,
+   "nome": "V564 Dra",
+   "dec": 57.8025182268,
+   "classe_I": "estavel",
+   "n_produtos": 142,
+   "setor_max": 86,
+   "data_fim": "2024-12-18",
+   "n_ffi_depois_corte": 0,
+   "setores_depois_corte": []
+  },
+  {
+   "tic": 392536812,
+   "nome": "NSVS 2953494",
+   "dec": 58.0564731259,
+   "classe_I": "estavel",
+   "n_produtos": 142,
+   "setor_max": 86,
+   "data_fim": "2024-12-18",
+   "n_ffi_depois_corte": 0,
+   "setores_depois_corte": []
+  },
+  {
+   "tic": 198408416,
+   "nome": "NSVS 2910034",
+   "dec": 58.8644982239,
+   "classe_I": "ambiguo",
+   "n_produtos": 172,
+   "setor_max": 86,
+   "data_fim": "2024-12-18",
+   "n_ffi_depois_corte": 0,
+   "setores_depois_corte": []
+  },
+  {
+   "tic": 230386284,
+   "nome": "StKM 1-1676",
+   "dec": 63.9928,
+   "classe_I": "estavel",
+   "n_produtos": 141,
+   "setor_max": 86,
+   "data_fim": "2024-12-18",
+   "n_ffi_depois_corte": 0,
+   "setores_depois_corte": []
+  },
+  {
+   "tic": 377253090,
+   "nome": "NSVS 3056525",
+   "dec": 58.951286,
+   "classe_I": "estavel",
+   "n_produtos": 136,
+   "setor_max": 86,
+   "data_fim": "2024-12-18",
+   "n_ffi_depois_corte": 0,
+   "setores_depois_corte": []
+  },
+  {
+   "tic": 390021728,
+   "nome": "[GGM2006] 3034154",
+   "dec": 56.4174803716,
+   "classe_I": "contraditado",
+   "n_produtos": 180,
+   "setor_max": 86,
+   "data_fim": "2024-12-18",
+   "n_ffi_depois_corte": 0,
+   "setores_depois_corte": []
+  },
+  {
+   "tic": 232634196,
+   "nome": "TYC 3906-474-1",
+   "dec": 56.195957119,
+   "classe_I": "contraditado",
+   "n_produtos": 188,
+   "setor_max": 86,
+   "data_fim": "2024-12-18",
+   "n_ffi_depois_corte": 0,
+   "setores_depois_corte": []
+  },
+  {
+   "tic": 424461577,
+   "nome": "V527 Dra",
+   "dec": 60.3981770092,
+   "classe_I": "contraditado",
+   "n_produtos": 174,
+   "setor_max": 86,
+   "data_fim": "2024-12-18",
+   "n_ffi_depois_corte": 0,
+   "setores_depois_corte": []
+  }
+ ],
+ "n_ffi_depois_corte": 0,
+ "veredito": "NAO HA nada depois de s86 para nenhum dos 8: o teste fora da amostra do Passo J nao pode ser feito hoje. Os 8 estao em Draco e o TESS voltou a apontar para o sul.",
+ "controle": {
+  "n": 38,
+  "dt_mediana_min": -0.1966858019659412,
+  "dt_abs_mediana_min": 0.3997616089800182,
+  "dt_abs_max_min": 7.199597323426161,
+  "dt_media_min": -0.41457493660529127,
+  "dt_sd_min": 1.4705475420445429,
+  "razao_sigma_formal_mediana": 1.1666666665611727,
+  "cadencia_min": 3.3333333333333317,
+  "por_provenance": {
+   "QLP": -0.20000000038788102,
+   "TESS-SPOC": -0.19360999482159968
+  }
+ }
+}

@@ -23,6 +23,15 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import config  # noqa: E402
 
+# a saida vai em UTF-8 sem depender de PYTHONIOENCODING: no console cp1252 o print do resumo
+# (o '²' da lista de caracteres restantes) levantava UnicodeEncodeError e matava o
+# script no meio das checagens (rodada onze); errors= garante que nenhum print derrube o
+# conversor, aconteca o que acontecer com o console
+try:
+    sys.stdout.reconfigure(encoding="utf-8", errors="backslashreplace")
+except (AttributeError, ValueError):   # stdout substituido por algo que nao e TextIOWrapper
+    pass
+
 MD = config.ROOT / "reports" / "dpdt_note.md"
 TEX_V1 = config.ROOT / "paper" / "dpdt_note_v1.tex"
 TEX = config.ROOT / "paper" / "dpdt_note.tex"
@@ -48,25 +57,26 @@ SECOES = {  # titulo do markdown -> (comando, rotulo)
     "5.2.5 A secular term through the same estimator: completeness and self-suppression": ("subsubsection", "sss:secular"),
     "5.3 Between-sector timing noise: the secondaries and the TESS sensitivity ceiling": ("subsection", "ss:setores"),
     "5.3.1 Secondary minima: the differential drift between sectors": ("subsubsection", "sss:secundarios"),
-    "5.3.2 TESS bars at the between-sector scale: a sensitivity test with a ceiling": ("subsubsection", "sss:teto"),
+    "5.3.2 The noise model at the between-sector scale, and what it does to the design": ("subsubsection", "sss:teto"),
     "5.4 Undersampled third-body orbits": ("subsection", "ss:orb"),
-    "5.5 External records: published work, archival minima, and the one detection carried by the lever": ("subsection", "ss:externo"),
+    "5.5 The window test: the same coefficient from the complete TESS block, and the external records": ("subsection", "ss:externo"),
     "6. What is and is not claimed": ("section", "s:claim"),
     "Data and code": ("section", "s:data"),
     "Data availability": ("section", "s:avail"),
     "Appendix A. Outcome of the recovery pass, per target": ("appendix", "a:A"),
     "Appendix B. Control target and period-ladder audit": ("appendix", "a:B"),
     "Appendix C. The orbit population, the efficiency, and the occurrence numbers": ("appendix", "a:C"),
-    "Appendix D. Record of readings withdrawn between versions": ("appendix", "a:D"),
+    "Appendix E. The residual test: simulations and their expectations": ("appendix", "a:E"),
+    "Appendix D. Record of readings withdrawn between versions, and of the changes of state": ("appendix", "a:D"),
 }
 REF_SECAO = {"3.1": "ss:epocas", "3.2": "ss:escada", "3.3": "ss:barras", "3.4": "ss:vies", "3.5": "ss:testes",
              "5.1": "ss:formais", "5.2": "ss:qualbarra", "5.3": "ss:setores", "5.4": "ss:orb", "5.5": "ss:externo",
              "5.2.1": "sss:esperado", "5.2.2": "sss:decomp", "5.2.3": "sss:nulo", "5.2.4": "sss:orbitas", "5.2.5": "sss:secular",
              "5.3.1": "sss:secundarios", "5.3.2": "sss:teto",
              "1": "s:intro", "2": "s:sel", "3": "s:met", "4": "s:res", "5": "s:val", "6": "s:claim"}
-REF_TABELA = {"1": "t:funil", "2": "t:naomedidos", "3": "t:coef", "4": "t:dist", "5": "t:barras"}
+REF_TABELA = {"1": "t:funil", "2": "t:naomedidos", "3": "t:coef", "4": "t:dist", "5": "t:janela"}
 REF_FIG = {"1": "f:dpdt", "2": "f:cvdra", "3": "f:barras", "4": "f:compl", "5": "f:v527"}   # CV Dra abre a Secao 5 (revisao externa, item 6)
-REF_APX = {"A": "a:A", "B": "a:B", "C": "a:C", "D": "a:D"}
+REF_APX = {"A": "a:A", "B": "a:B", "C": "a:C", "D": "a:D", "E": "a:E"}
 
 
 # ---------- conversao inline ----------
@@ -78,16 +88,18 @@ def esc(t):
 SIMBOLOS = [
     ("Σχ²", "$\\Sigma\\chi^2$"), ("Q·E²", "$Q\\cdot E^2$"), ("QE²", "$QE^2$"), ("0.78²", "$0.78^2$"), ("a₃", "$a_3$"), ("10⁻²¹", "$10^{-21}$"), ("10⁻¹⁴", "$10^{-14}$"),
     ("10⁻¹⁹", "$10^{-19}$"), ("10⁻¹²", "$10^{-12}$"), ("std(d)/√n", "${\\rm std}(d)/\\sqrt{n}$"), ("std(d)", "${\\rm std}(d)$"),
-    ("√2–√3", "$\\sqrt{2}$--$\\sqrt{3}$"), ("|t_a − t_b|/√2", "$|t_a - t_b|/\\sqrt{2}$"), ("|d₁ − d₂|/√2", "$|d_1 - d_2|/\\sqrt{2}$"), ("|Δ|/√2", "$|\\Delta|/\\sqrt{2}$"), ("±Δ/2", "$\\pm\\Delta/2$"), ("difference Δ", "difference $\\Delta$"),
+    ("√2–√3", "$\\sqrt{2}$--$\\sqrt{3}$"), ("|t_a − t_b|/√2", "$|t_a - t_b|/\\sqrt{2}$"), ("|t_a − t_b|/2", "$|t_a - t_b|/2$"), ("|d₁ − d₂|/√2", "$|d_1 - d_2|/\\sqrt{2}$"), ("|Δ|/√2", "$|\\Delta|/\\sqrt{2}$"), ("±Δ/2", "$\\pm\\Delta/2$"), ("difference Δ", "difference $\\Delta$"),
     ("±(d₁ − d₂)/2", "$\\pm(d_1 - d_2)/2$"), ("z² = r²/s²", "$z^2 = r^2/s^2$"), ("z² = 0.5", "$z^2 = 0.5$"), ("√n", "$\\sqrt{n}$"),
     ("F(1, ν)", "$F(1,\\nu)$"), ("ν/(ν − 2)", "$\\nu/(\\nu-2)$"), ("ν ≤ 2", "$\\nu \\le 2$"), ("ν = 1–2", "$\\nu$ = 1--2"),
-    ("10⁻³⁰", "$10^{-30}$"), ("10⁻⁶", "$10^{-6}$"), ("10⁻³", "$10^{-3}$"), ("10⁻⁴", "$10^{-4}$"), ("10⁻⁷", "$10^{-7}$"),
+    ("10⁻¹⁰", "$10^{-10}$"), ("10⁻³⁰", "$10^{-30}$"), ("10⁻⁶", "$10^{-6}$"), ("10⁻³", "$10^{-3}$"), ("10⁻⁴", "$10^{-4}$"), ("10⁻⁷", "$10^{-7}$"),
     ("χ²_red", "$\\chi^2_{\\rm red}$"), ("Δχ²", "$\\Delta\\chi^2$"), ("ΔG", "$\\Delta G$"), ("χ²/ν", "$\\chi^2/\\nu$"), ("χ²", "$\\chi^2$"),
+    ("Δ per 2.14 min", "$\Delta$ per 2.14 min"), ("Δ(dP/dt)", "$\Delta(\mathrm{d}P/\mathrm{d}t)$"), ("Δ(−2 ln L)", "$\Delta(-2\ln L)$"), ("√(χ²/ν)", "$\sqrt{\chi^2/\nu}$"), ("γ", "$\gamma$"),
     ("Σε₃", "$\\Sigma\\varepsilon_3$"), ("Σε", "$\\Sigma\\varepsilon$"), ("ε₃", "$\\varepsilon_3$"), ("ε", "$\\varepsilon$"),
     ("|dP/dt|/σ", "$|\\mathrm{d}P/\\mathrm{d}t|/\\sigma$"), ("|dP/dt|", "$|\\mathrm{d}P/\\mathrm{d}t|$"),
     ("σ(dP/dt)", "$\\sigma(\\mathrm{d}P/\\mathrm{d}t)$"), ("dP/dt", "$\\mathrm{d}P/\\mathrm{d}t$"),
     ("σ_P × N", "$\\sigma_P \\times N$"), ("P₃", "$P_3$"), ("M₃", "$M_3$"), ("M_bin", "$M_{\\rm bin}$"), ("M☉", "$M_\\odot$"),
     ("p_gof", "$p_{\\rm gof}$"), ("p_curv", "$p_{\\rm curv}$"), ("p_adv", "$p_{\\rm adv}$"), ("T14", "$T_{14}$"),
+    ("< 500 valid points", "$<$ 500 valid points"), ("Σz²/Σ(1 − h)", "$\\Sigma z^2/\\Sigma(1-h)$"), ("2Pδ/T²", "$2P\\delta/T^2$"), ("offset δ", "offset $\\delta$"), ("conservative by √2", "conservative by $\\sqrt{2}$"), ("10⁻²⁷", "$10^{-27}$"), ("10⁻¹⁷", "$10^{-17}$"), ("Q × ΔE²", "$Q \\times \\Delta E^2$"), ("error √2 larger", "error $\\sqrt{2}$ larger"), ("divisor was √2", "divisor was $\\sqrt{2}$"), ("the √2 in the bar", "the $\\sqrt{2}$ in the bar"), ("too large by √2", "too large by $\\sqrt{2}$"), ("by √2 with", "by $\\sqrt{2}$ with"),
     ("Σz²", "$\\Sigma z^2$"), ("Σ(1−h)", "$\\Sigma(1-h)$"), ("Σ (1 − h)", "$\\Sigma(1-h)$"), ("z²/(1−h)", "$z^2/(1-h)$"), ("E[r²/σ²] = 1 − h", "$E[r^2/\\sigma^2]=1-h$"),
     ("f × Σε", "$f\\times\\Sigma\\varepsilon$"), ("√(2.73 − 0.37)", "$\\sqrt{2.73-0.37}$"), ("√1.92", "$\\sqrt{1.92}$"),
     ("O−C", "O$-$C"), ("β", "$\\beta$"), ("σ", "$\\sigma$"), ("ν", "$\\nu$"), ("ρ", "$\\rho$"), ("τ", "$\\tau$"),
@@ -99,6 +111,23 @@ SIMBOLOS = [
 ]
 
 
+def tabela2_tex(bloco_v1, md):
+    """O corpo da Tabela 2 vem das linhas markdown entre os marcadores (tabela_nota.tabela2), nao do TeX v1;
+    o ambiente (caption, rotulo, colunas) e o do v1."""
+    ini, fim = md.index("<!-- tabela2:inicio -->"), md.index("<!-- tabela2:fim -->")
+    linhas = [l for l in md[ini:fim].split("\n") if l.startswith("| ") and not l.startswith("| Reason") and not l.startswith("|---")]
+    assert 4 <= len(linhas) <= 8, linhas
+    corpo, total = [], 0
+    for l in linhas:
+        razao, n, natureza = [c.strip() for c in l.strip().strip("|").split("|")]
+        total += int(n)
+        corpo.append(f"{inline(razao)} & {n} & {inline(natureza)}\\\\")
+    assert total == 62, total
+    a = bloco_v1.index("Reason & N & Nature\\\\\n\\hline\n") + len("Reason & N & Nature\\\\\n\\hline\n")
+    b = bloco_v1.index("\\hline\n\\end{tabular}")
+    return bloco_v1[:a] + "\n".join(corpo) + "\n" + bloco_v1[b:]
+
+
 def inline(t):
     """markdown inline -> TeX; protege codigo e matematica antes de escapar; URLs viram \\url{} do hyperref."""
     partes = re.split(r"(`[^`]*`)", t)
@@ -106,7 +135,7 @@ def inline(t):
     for k, parte in enumerate(partes):
         if k % 2 == 1:                       # codigo
             # nomes de arquivo longos em \texttt nao quebram: ponto de quebra opcional depois de "src/"
-            out.append("\\texttt{" + esc(parte[1:-1]).replace("src/", "src/\\allowbreak ") + "}")
+            out.append("\\texttt{" + esc(parte[1:-1]).replace("src/", "src/\\allowbreak ").replace("\\_", "\\_\\allowbreak ") + "}")
             continue
         # simbolos primeiro (com placeholders, para o escape nao mexer neles), depois o escape
         s = parte
@@ -148,7 +177,7 @@ def inline(t):
         s = re.sub(r"Figs\. (\d), (\d) and (\d)", lambda m: "Figs.~" + ", ".join(f"\\ref{{{REF_FIG[g]}}}" for g in m.groups()[:2]) + f" and \\ref{{{REF_FIG[m.group(3)]}}}", s)
         s = re.sub(r"Figs\. (\d) and (\d)", lambda m: f"Figs.~\\ref{{{REF_FIG[m.group(1)]}}} and \\ref{{{REF_FIG[m.group(2)]}}}", s)
         s = re.sub(r"Fig\. (\d)", lambda m: f"Fig.~\\ref{{{REF_FIG[m.group(1)]}}}", s)
-        s = re.sub(r"Appendix ([ABC])", lambda m: f"Appendix~\\ref{{{REF_APX[m.group(1)]}}}", s)
+        s = re.sub(r"Appendix ([ABCDE])", lambda m: f"Appendix~\\ref{{{REF_APX[m.group(1)]}}}", s)
         for n, ext in enumerate(externas):
             s = s.replace(f"\x02{n}\x02", ext)
         # unidades
@@ -206,18 +235,33 @@ def corpo_tabela3(md):
     cab = linhas[0]
     assert cab[:14] == ["TIC", "Name", "RA, Dec (J2000, deg)", "Tmag", "P (d)", "N (TESS+SW)", "d.o.f.", "span (yr)", "quadratic coefficient as dP/dt (s yr⁻¹)",
                         "χ²_red", "p_gof", "p_curv", "p_adv", "class"], cab[:14]
-    t3, t5 = [], []
+    t3 = []
     for c in linhas[1:]:
         ra, dec = c[2].split(", ")
         t3.append(" & ".join([c[0], nome_tex(c[1]), ra, dec, c[3], c[4], c[5], c[6], c[7], c[8].replace("±", "$\\pm$"), c[9],
                               p_tex(c[10]), p_tex(c[11]), p_tex(c[12]), codigo_classe(c[13])]) + "\\\\")
-        celulas = [c[0], nome_tex(c[1])]
-        for par in c[14:16]:                      # "p_curv, p_adv*" por configuracao (TESS +1,0 / +2,6); * = ainda detectado
-            pc, pa = [x.strip() for x in par.split(",")]
-            celulas += [p_tex(pc), p_tex(pa)]
-        t5.append(" & ".join(celulas) + "\\\\")
     assert len(t3) == 26, len(t3)
-    return "\n".join(t3) + "\n", "\n".join(t5) + "\n"
+    return "\n".join(t3) + "\n"
+
+
+def tabela6(md):
+    """Tabela 6 inteira (26 linhas): o teste de janela e a sensibilidade ao vies."""
+    linhas = linhas_md(md, "tabela6")
+    cab = linhas[0]
+    assert cab[0] == "TIC" and cab[-1].startswith("Δ per"), cab
+    corpo = "\n".join(" & ".join(inline(c).replace("±", "$\\pm$") for c in l) + "\\\\" for l in linhas[1:]) + "\n"
+    cabtex = " & ".join(inline(c) for c in cab) + "\\\\\n"
+    leg = legenda_tabela(md, "Table 5.")
+    return ("\\begin{table*}\n\\caption{" + leg + "}\n\\label{t:janela}\n\\centering\n\\scriptsize\n"
+            "\\begin{tabular}{r l r r r l r r}\n\\hline\\hline\n" + cabtex + "\\hline\n" + corpo + "\\hline\n\\end{tabular}\n\\end{table*}\n")
+
+
+def legenda_tabela(md, prefixo):
+    """A legenda da tabela no markdown: o paragrafo em negrito que comeca com o prefixo."""
+    import re as _re
+    m = _re.search(r"\*\*" + _re.escape(prefixo) + r"(.*?)\*\*(.*?)\n\n", md, _re.S)
+    assert m, prefixo
+    return inline((m.group(1) + m.group(2)).strip())
 
 
 def tabela4(md, caption_label):
@@ -235,14 +279,27 @@ def trocar_corpo(env, corpo):
     return env[:a] + corpo + env[b:]
 
 
+def conferir_figuras():
+    """paper/figures tem de ser identica a reports/figures: o PDF usa a primeira e os scripts
+    escrevem na segunda (rodada dez: o PDF passou quatro rodadas com as figuras do estado A/B)."""
+    orig = config.ROOT / "reports" / "figures"
+    dest = config.ROOT / "paper" / "figures"
+    dif = [p.name for p in sorted(orig.glob("*.png")) if not (dest / p.name).exists() or (dest / p.name).read_bytes() != p.read_bytes()]
+    assert not dif, f"figuras de paper/ diferentes das geradas: {dif} - rode src/figuras_nota.py"
+    print(f"figuras conferidas: {len(list(orig.glob('*.png')))} identicas em reports/ e paper/")
+
+
 def main():
+    conferir_figuras()
     md = MD.read_text(encoding="utf-8")
     v1 = TEX_V1.read_text(encoding="utf-8")
     preambulo = v1[:v1.index("\\begin{document}")]
     preambulo = re.sub(r"^%%.*\n(%%.*\n)*", "", preambulo)  # cabecalho de comentarios antigo
     # Tabela 4 (343 pt) + Fig. 2 (~290 pt) somam 0,90 da altura de texto (705 pt): abaixo do 0,95 que o aa.cls exige
     # para uma pagina so de floats, e acima do que cabe no topo com texto embaixo; sem isto a Fig. 2 vai da p. 6 para a p. 8
-    preambulo += "\\renewcommand*\\dblfloatpagefraction{0.85}\n"
+    preambulo += "".join(x + chr(10) for x in ["\\renewcommand*\\dblfloatpagefraction{0.85}", "\\renewcommand*\\dbltopfraction{0.90}"])
+    # empacotamento de floats (so diagramacao): sem isto o LaTeX abre paginas de float com 100-200 palavras
+    preambulo += "".join(x + chr(10) for x in ['\\renewcommand*\\topfraction{0.9}', '\\renewcommand*\\bottomfraction{0.8}', '\\renewcommand*\\textfraction{0.07}', '\\renewcommand*\\floatpagefraction{0.75}', '\\setcounter{topnumber}{3}', '\\setcounter{bottomnumber}{2}', '\\setcounter{totalnumber}{5}', '\\setcounter{dbltopnumber}{3}'])
     cabecalho = ("%% How archival eclipse timing can produce period change\n%% A&A regular article. Requires aa.cls (in this folder).\n"
                  "%% Figures expected in ./figures/ : fig1_barras.png fig4_dpdt.png fig2_v527_injecao.png fig3_cvdra.png fig5_completude.png\n"
                  "%% Generated from reports/dpdt_note.md by src/md_para_tex.py. Table bodies (Tables 3-5) come from the markdown\n"
@@ -257,7 +314,6 @@ def main():
         "t:dist": bloco_tex(v1, "\\begin{table*}\n\\caption{The distribution, in three partitions", "\\end{table*}"),
     }
     i = v1.index("\\end{table*}", v1.index("\\label{t:dist}")) + len("\\end{table*}")
-    tabelas["t:barras"] = bloco_tex(v1[i:], "\\begin{sidewaystable*}", "\\end{sidewaystable*}")
     figuras = {}
     for rot, arq in (("f:barras", "fig1_barras"), ("f:dpdt", "fig4_dpdt"), ("f:v527", "fig2_v527_injecao"), ("f:cvdra", "fig3_cvdra")):
         j = v1.index("{figures/" + arq)               # o ambiente, nao a mencao no cabecalho
@@ -265,8 +321,11 @@ def main():
         b = v1.index("\\end{figure", j)
         b = v1.index("}", b) + 1
         figuras[rot] = v1[a:b]
-    figuras["f:compl"] = ("\\begin{figure*}\n\\centering\n\\includegraphics[width=\\linewidth]{figures/fig5_completude.png}\n"
-                         "\\caption{PLACEHOLDER}\n\\label{f:compl}\n\\end{figure*}")
+    figuras["f:compl"] = ("\\begin{figure}\n\\centering\n\\includegraphics[width=\\linewidth]{figures/fig5_completude.png}\n"
+                         "\\caption{PLACEHOLDER}\n\\label{f:compl}\n\\end{figure}")
+    # Fig. 1 (coeficientes) e Fig. 4 (completude) em UMA coluna (rodada dez-b): as duas eram
+    # figure* e abriam paginas de float quase vazias
+    figuras["f:dpdt"] = figuras["f:dpdt"].replace("{figure*}", "{figure}")
     bib = bloco_tex(v1, "\\begin{thebibliography}{99}", "\\end{thebibliography}")
     # rotulos de secao antigos dentro das tabelas/figuras: s:orb (antiga secao 6) -> ss:orb
     for d in (tabelas, figuras):
@@ -289,15 +348,9 @@ def main():
         assert tabelas["t:dist"].count(a) == 1, a
         tabelas["t:dist"] = tabelas["t:dist"].replace(a, b)
     # Tabela 5: gerada inteira aqui (so o teto TESS; a coluna SuperWASP x1,65 saiu em 2026-09-13 - Sect. 5.2.3)
-    corpo3, corpo5 = corpo_tabela3(md)
+    corpo3 = corpo_tabela3(md)
+    tabelas["t:janela"] = tabela6(md)
     tabelas["t:coef"] = trocar_corpo(tabelas["t:coef"], corpo3)
-    tabelas["t:barras"] = ("\\begin{table*}\n\\caption{Curvature with the TESS bars inflated in quadrature by 1.0 and by 2.6 min\\,yr$^{-1}$ times the "
-                           "target lever, the sensitivity ceiling of Sect.~\\ref{sss:teto}, as $p_{\\rm curv}$, $p_{\\rm adv}$; the SuperWASP bars are those of "
-                           "Sect.~\\ref{ss:barras}, uncorrected for the reason given in Sect.~\\ref{sss:nulo}. A detection requires both $p<0.05$ (marked $*$).}\n"
-                           "\\label{t:barras}\n\\centering\n\\tiny\n\\begin{tabular}{l l r r r r}\n\\hline\\hline\n"
-                           "TIC & Name & \\multicolumn{2}{c}{TESS $+$1.0 min\\,yr$^{-1}$} & \\multicolumn{2}{c}{TESS $+$2.6 min\\,yr$^{-1}$}\\\\\n"
-                           " &  & $p_{\\rm curv}$ & $p_{\\rm adv}$ & $p_{\\rm curv}$ & $p_{\\rm adv}$\\\\\n\\hline\n"
-                           + corpo5 + "\\hline\n\\end{tabular}\n\\end{table*}")
     tabelas["t:dist"] = tabela4(md, tabelas["t:dist"][:tabelas["t:dist"].index("\\centering")])
 
     # ---------- abstract estruturado ----------
@@ -354,11 +407,13 @@ def main():
             if ln.startswith("<!-- tabela4:inicio"):
                 # a Tabela 4 (distribuicao) e depois a Tabela 5 (as tres inflacoes, colunas que no
                 # markdown estao na Tabela 3): numeracao 3, 4, 5 como no TeX anterior
-                flush(); saida.append(tabelas["t:dist"] + "\n" + tabelas["t:barras"] + "\n"); em_tabela = True; continue
-            if ln.startswith("<!-- tabela3:fim") or ln.startswith("<!-- tabela4:fim"):
+                flush(); saida.append(tabelas["t:dist"] + "\n"); em_tabela = True; continue
+            if ln.startswith("<!-- tabela6:inicio"):
+                flush(); saida.append(tabelas["t:janela"] + chr(10)); em_tabela = True; continue
+            if ln.startswith("<!-- tabela3:fim") or ln.startswith("<!-- tabela4:fim") or ln.startswith("<!-- tabela6:fim"):
                 em_tabela = False; continue
-            if em_tabela == "md":                                # tabela markdown: pula as linhas "|" (e as vazias) e sai na primeira que nao e
-                if ln.startswith("|") or not ln.strip():
+            if em_tabela == "md":                                # tabela markdown: pula as linhas "|" (e as vazias, e os marcadores) e sai na primeira que nao e
+                if ln.startswith("|") or not ln.strip() or ln.startswith("<!-- tabela2:"):
                     continue
                 em_tabela = False
             if em_tabela or ln.startswith("<!--"):
@@ -366,17 +421,30 @@ def main():
             if ln.startswith("**Table 1. Selection funnel.**"):
                 flush(); saida.append(tabelas["t:funil"] + "\n"); em_tabela = "md"; continue
             if ln.startswith("**Table 2. "):
-                flush(); saida.append(tabelas["t:naomedidos"] + "\n"); em_tabela = "md"; continue
-            if ln.startswith("**Table 3. ") or ln.startswith("**Table 4. "):
+                flush(); saida.append(tabela2_tex(tabelas["t:naomedidos"], md) + "\n"); em_tabela = "md"; continue
+            if ln.startswith("**Table 3. ") or ln.startswith("**Table 4. ") or ln.startswith("**Table 5. "):
                 continue                                          # as captions ja estao nos blocos verbatim
             if ln.startswith("    chain bias ="):
-                flush(); saida.append("\\begin{equation}\n\\text{chain bias} = -2.14 \\pm 0.78\\ \\mathrm{min}.\n\\end{equation}\n"); continue
+                # a equacao vem do MARKDOWN: ate a rodada nove ela estava fixa aqui com o valor do
+                # estado D, e o PDF trazia -2,14 +- 0,78 enquanto o texto dizia -1,26 +- 0,75
+                num = ln.split("=", 1)[1].strip().rstrip(".")
+                num = num.replace(chr(0x2212), "-").replace(chr(0xb1), r"\pm").replace(" min", r"\ \mathrm{min}")
+                flush()
+                B = chr(92)
+                saida.append(B + "begin{equation}" + chr(10) + B + "text{chain bias} = " + num + "." + chr(10) + B + "end{equation}" + chr(10))
+                continue
             m_item = re.match(r"(- |\d+\. )(.*)", ln)
             if m_item:                                            # listas: "- " -> itemize, "1. " -> enumerate
                 flush()
                 tipo = "itemize" if m_item.group(1) == "- " else "enumerate"
                 if lista != tipo:
-                    fechar_lista(); saida.append("\\begin{" + tipo + "}\n"); lista = tipo
+                    fechar_lista(); saida.append("\\begin{" + tipo + "}" + chr(10)); lista = tipo
+                    # numeracao continua: no markdown o Apendice D e uma lista so, quebrada em grupos por
+                    # subtitulos; sem isto cada egin{enumerate} reinicia em 1 (a revisao viu 1-5, 1-3, 1-10)
+                    if tipo == "enumerate":
+                        n0 = int(m_item.group(1).rstrip(". "))
+                        if n0 > 1:
+                            saida.append("\\setcounter{enumi}{%d}" % (n0 - 1) + chr(10))
                 saida.append("\\item " + inline(m_item.group(2).strip()) + "\n")
                 continue
             if not ln.strip():
@@ -411,6 +479,11 @@ def main():
     # apendices
     saida.append("\n\\appendix\n")
     partes_apx = re.split(r"^(## Appendix .+)$", apendices, flags=re.M)
+    # o LaTeX numera apendice pela ORDEM de aparicao: o nome no markdown tem de bater com a
+    # posicao, senao o PDF sai com as letras trocadas (aconteceu com D e E na rodada onze)
+    letras = [re.match(r"## Appendix ([A-Z])\.", partes_apx[k]).group(1) for k in range(1, len(partes_apx), 2)]
+    esperado = [chr(ord("A") + i) for i in range(len(letras))]
+    assert letras == esperado, f"apendices fora de ordem no markdown: {letras} (o LaTeX daria {esperado})"
     for k in range(1, len(partes_apx), 2):
         titulo = partes_apx[k].lstrip("# ").strip()
         cmd, rot = SECOES[titulo]
@@ -426,17 +499,20 @@ def main():
     doc = (cabecalho + preambulo + "\\begin{document}\n\n"
            + f"\\title{{{inline(t1)}}}\n\\subtitle{{{inline(t2[0].upper() + t2[1:])}}}\n\n" + autor + "\n\n" + abstract + "\n" + keywords + "\n\n\\maketitle\n"
            + "".join(saida))
-    TEX.write_text(doc, encoding="utf-8")
-    print(f"-> {TEX} ({len(doc.split())} palavras); secoes: {len(partes_sec) // 2}; apendices: {len(partes_apx) // 2}")
+    # ---- GUARDAS: TODAS antes de qualquer escrita (rodada doze). Ate a rodada onze o TeX
+    # era escrito aqui e as checagens vinham depois, com prints no meio; um print que
+    # estourasse deixava no lugar um .tex que ninguem tinha conferido. Agora, se qualquer
+    # guarda falhar, nenhum .tex e escrito e o anterior fica intacto.
+    resumo = [f"-> {TEX} ({len(doc.split())} palavras); secoes: {len(partes_sec) // 2}; apendices: {len(partes_apx) // 2}"]
     # sobras de markdown ou de unicode que a conversao nao cobriu
     # placeholder que escapou (um "\x00N\x01" nao restaurado) e um byte de controle no TeX: falha alta
     escapou = re.findall(r"[\x00-\x08\x0b\x0c\x0e-\x1f]", doc)
     assert not escapou, f"{len(escapou)} bytes de controle no TeX: placeholder da conversao inline nao restaurado"
     sobras = sorted(set(re.findall(r"[^\x00-\x7F]", doc)) - set("áàâãéêíóôõúçÁÉÍÓÚñüöäšřČŞıŠŁłČěřž°"))
-    print("caracteres nao-ASCII restantes no TeX (fora de acentos):", "".join(sobras))
+    resumo.append("caracteres nao-ASCII restantes no TeX (fora de acentos): " + "".join(sobras))
     # o que sobra e o que pdflatex ja aceitou (² via textcomp; ć ő na bibliografia); qualquer outro caractere e falha alta ANTES do pdflatex
     assert not (set(sobras) - set("²ćő")), f"caracteres novos fora da tabela de simbolos: {set(sobras) - set(chr(0xb2) + chr(0x107) + chr(0x151))}"
-    print("marcadores markdown restantes: **:", doc.count("**"), "| ` :", doc.count("`") - doc.count("``"))
+    resumo.append(f"marcadores markdown restantes: **: {doc.count('**')} | ` : {doc.count('`') - doc.count('``')}")
     # AUSENCIA, nao so presenca: nada de tabela markdown crua no corpo, e nenhum trecho
     # distintivo aparece mais de uma vez (a Secao 2 saiu duplicada uma vez por isso)
     corpo_sem_tab = re.sub(r"\\begin\{(sideways)?table\*?\}.*?\\end\{(sideways)?table\*?\}", "", doc, flags=re.S)
@@ -447,7 +523,7 @@ def main():
                   "Consequence of the formal-error run"):
         n = doc.count(frase)
         assert n == 1, f"{frase!r} aparece {n}x no TeX (esperado 1)"
-    print("ausencia conferida: 0 linhas de tabela crua fora de ambientes; 5 trechos distintivos aparecem exatamente 1x")
+    resumo.append("ausencia conferida: 0 linhas de tabela crua fora de ambientes; 5 trechos distintivos aparecem exatamente 1x")
     # paragrafos: no corpo (fora de ambientes e da bibliografia), duas linhas de texto consecutivas sem linha em
     # branco entre elas sao dois paragrafos do markdown que o TeX vai emendar num so
     corpo_texto = re.sub(r"\\begin\{(thebibliography|figure\*?|abstract|acknowledgements)\}.*?\\end\{\1\}", "", corpo_sem_tab, flags=re.S)
@@ -465,7 +541,12 @@ def main():
                    if p.strip() and not p.lstrip().startswith(("|", "#", "<!--", "**Table ", "- ")) and not re.match(r"\d+\. ", p.lstrip()))   # captions vem do v1; listas viram \item
     n_par_tex = sum(1 for l in linhas_tex if e_texto(l))
     assert n_par_md == n_par_tex, f"{n_par_md} paragrafos no markdown, {n_par_tex} blocos de texto no TeX"
-    print(f"paragrafos: {n_par_tex} blocos de texto no TeX = {n_par_md} paragrafos no markdown; 0 pares emendados")
+    resumo.append(f"paragrafos: {n_par_tex} blocos de texto no TeX = {n_par_md} paragrafos no markdown; 0 pares emendados")
+
+    # ---- escrita: so agora, com todas as guardas passadas
+    TEX.write_text(doc, encoding="utf-8")
+    for linha in resumo:
+        print(linha)
 
 
 if __name__ == "__main__":

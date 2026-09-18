@@ -28,11 +28,29 @@ import config  # noqa: E402
 BASE = config.DATA / "orquestra" / "oc_lote"
 FIG = config.ROOT / "reports" / "figures"
 FIG.mkdir(parents=True, exist_ok=True)
+TEXTO_FIG = {}          # nome do arquivo -> todo texto desenhado dentro da figura
+
+
+def registrar_texto(fig, arquivo):
+    """Guarda o texto que a figura desenha (eixos, legendas, tiques, anotacoes).
+
+    O PNG rasteriza esse texto: nenhuma leitura do PDF o alcanca, e foi por ai que rotulos do
+    estado A/B ("D10", "1 of 10", "observed -0,0359") sobreviveram quatro rodadas dentro dos
+    graficos. Gravado aqui, a lista negra de confere_nota o varre como varre a nota."""
+    import matplotlib.text
+    fig.canvas.draw()                      # sem isto os rotulos de tique ainda estao vazios
+    vistos = []
+    for t in fig.findobj(matplotlib.text.Text):
+        x = t.get_text().strip()
+        if x and x not in vistos:
+            vistos.append(x)
+    TEXTO_FIG[arquivo] = vistos
+    return vistos
 
 
 def fig1():
     t = pd.read_parquet(BASE / "tabela_26.parquet").sort_values("dPdt").reset_index(drop=True)
-    fig, ax = plt.subplots(figsize=(7.5, 5.2))
+    fig, ax = plt.subplots(figsize=(4.0, 5.4))   # uma coluna do aa.cls (88 mm)
     y = np.arange(len(t))
     ok = ~t.inadequada
     ax.errorbar(t.dPdt[ok], y[ok], xerr=t.s[ok], fmt="o", color="k", ms=4, capsize=2, lw=0.9, label="quadratic fit adequate (p_gof ≥ 0.05)")
@@ -42,10 +60,13 @@ def fig1():
     ax.axvline(0, color="0.6", lw=0.8)
     ax.set_yticks(y)
     ax.set_yticklabels([f"{n}" if n else str(tic) for n, tic in zip(t.nome, t.TIC)], fontsize=7)
-    ax.set_xlabel("quadratic coefficient as dP/dt (s yr⁻¹)")
-    ax.set_xscale("symlog", linthresh=0.01)
-    ax.legend(fontsize=8, loc="lower right")
-    fig.tight_layout()
+    ax.set_xlabel("quadratic coefficient as dP/dt (s yr⁻¹)", fontsize=9)
+    ax.set_xscale("symlog", linthresh=0.01); ax.tick_params(axis="x", labelsize=8)
+    # legenda FORA dos eixos: numa coluna ela cobria os rotulos dos tres ultimos alvos
+    # a legenda abaixo do rotulo do eixo x (em -0,09 ela cobria o rotulo; conferido no render)
+    ax.legend(fontsize=6.8, loc="upper center", bbox_to_anchor=(0.5, -0.155), frameon=False, ncol=1, handletextpad=0.5)
+    fig.tight_layout(rect=(0, 0.02, 1, 1))
+    registrar_texto(fig, "fig4_dpdt.png")
     fig.savefig(FIG / "fig4_dpdt.png", dpi=180)
     plt.close(fig)
 
@@ -73,6 +94,7 @@ def fig2():
     axs[2].set_xlabel("orbital phase of the injected LTTE (P₃ = 2.733 yr, A = 6.6 min)")
     axs[2].legend(fontsize=8)
     fig.tight_layout()
+    registrar_texto(fig, "fig2_v527_injecao.png")
     fig.savefig(FIG / "fig2_v527_injecao.png", dpi=180)
     plt.close(fig)
 
@@ -106,6 +128,7 @@ def fig3():
     ax.set_ylabel("O − C (min), VarAstro ephemeris")
     ax.legend(fontsize=7.5, loc="upper center")
     fig.tight_layout()
+    registrar_texto(fig, "fig3_cvdra.png")
     fig.savefig(FIG / "fig3_cvdra.png", dpi=180)
     plt.close(fig)
 
@@ -148,16 +171,18 @@ def fig_barras():
             handles.append(h); labels.append(l)
     fig.legend(handles, labels, fontsize=7, loc="lower center", ncol=2, frameon=False)   # fora dos paineis: nao cobre ponto nenhum
     fig.tight_layout(rect=(0, 0.14, 1, 1))
+    registrar_texto(fig, "fig1_barras.png")
     fig.savefig(FIG / "fig1_barras.png", dpi=180)
     plt.close(fig)
 
 
 def fig_completude():
-    """Fig. 5: por alvo, completude (esquerda) e supressao sigma_re/sigma_verdadeiro (direita) contra o |dP/dt|
-    secular injetado; D10 em preto, os outros em cinza, a mediana dos 26 em vermelho."""
+    """Fig. 4 da nota: por alvo, completude (painel de cima) e supressao sigma_re/sigma_verdadeiro (de baixo)
+    contra o |dP/dt| secular injetado; o D11 em preto, os outros em cinza, a mediana dos 26 em vermelho.
+    Uma coluna, paineis empilhados (rodada dez-b)."""
     R = pd.read_parquet(BASE / "completude_secular_26.parquet")
     t = pd.read_parquet(BASE / "tabela_26.parquet").set_index("TIC")
-    fig, axs = plt.subplots(1, 2, figsize=(10, 4.2))
+    fig, axs = plt.subplots(2, 1, figsize=(4.0, 5.8))   # uma coluna, paineis empilhados
     grade = sorted(R.dpdt.unique()); x = [g if g > 0 else 0.002 for g in grade]      # o 0 (falso alarme) entra como 0,002 no eixo log
     for tic, g in R.groupby("tic"):
         g = g.sort_values("dpdt")
@@ -169,16 +194,39 @@ def fig_completude():
     axs[0].plot([], [], "-", color="k", lw=1.2, label=f"D{int(t.curvatura.sum())}"); axs[0].plot([], [], "-", color="0.65", lw=0.8, label="other targets")
     for ax in axs:
         ax.set_xscale("log"); ax.set_xticks([0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2]); ax.set_xticklabels(["0", "0.005", "0.01", "0.02", "0.05", "0.1", "0.2"])
-        ax.xaxis.set_minor_formatter(matplotlib.ticker.NullFormatter()); ax.set_xlabel("injected |dP/dt| (s yr⁻¹)")
-    axs[0].set_ylabel("completeness (curvature + adversarial gate)"); axs[0].set_ylim(-0.02, 1.02); axs[0].axhline(0.5, color="0.6", ls=":", lw=0.8)
-    axs[1].set_yscale("log"); axs[1].set_ylabel("σ(dP/dt) with re-estimated bars / σ with true bars"); axs[1].axhline(1, color="0.6", ls=":", lw=0.8)
+        ax.xaxis.set_minor_formatter(matplotlib.ticker.NullFormatter()); ax.set_xlabel("injected |dP/dt| (s yr⁻¹)", fontsize=9)
+        ax.tick_params(labelsize=8)
+    axs[0].set_ylabel("completeness", fontsize=9); axs[0].set_ylim(-0.02, 1.02); axs[0].axhline(0.5, color="0.6", ls=":", lw=0.8)
+    axs[1].set_yscale("log"); axs[1].set_ylabel("σ re-estimated / σ true", fontsize=9); axs[1].axhline(1, color="0.6", ls=":", lw=0.8)
     axs[1].set_yticks([0.5, 1, 2, 5, 10, 20]); axs[1].set_yticklabels(["0.5", "1", "2", "5", "10", "20"]); axs[1].yaxis.set_minor_formatter(matplotlib.ticker.NullFormatter())
     axs[0].legend(fontsize=8, loc="lower right", frameon=False)
     fig.tight_layout()
+    registrar_texto(fig, "fig5_completude.png")
     fig.savefig(FIG / "fig5_completude.png", dpi=180)
     plt.close(fig)
+
+
+def gravar_texto_das_figuras():
+    destino = config.ROOT / "reports" / "figuras_texto.json"
+    destino.write_text(json.dumps(TEXTO_FIG, indent=1, ensure_ascii=False), encoding="utf-8")
+    print(f"  texto das figuras -> {destino} ({sum(len(v) for v in TEXTO_FIG.values())} cadeias)")
+
+
+def espelhar_no_paper():
+    """As figuras do PDF vem de paper/figures. Ate a rodada dez elas eram copias de mao, e o
+    PDF ficou com as figuras do estado A/B enquanto o texto ja estava no E. Agora toda geracao
+    copia, e o conversor confere byte a byte (md_para_tex)."""
+    import shutil
+    destino = config.ROOT / "paper" / "figures"
+    destino.mkdir(parents=True, exist_ok=True)
+    for p in sorted(FIG.glob("*.png")):
+        shutil.copy2(p, destino / p.name)
+        assert (destino / p.name).read_bytes() == p.read_bytes(), p.name
+    print(f"  espelhadas em {destino}: {len(list(FIG.glob('*.png')))} figuras")
 
 
 if __name__ == "__main__":
     fig_barras(); fig1(); fig2(); fig3(); fig_completude()
     print("figuras em", FIG)
+    espelhar_no_paper()
+    gravar_texto_das_figuras()

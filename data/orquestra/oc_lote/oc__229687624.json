@@ -1,8 +1,9 @@
 {
  "tic": 229687624,
  "P_ref_d": 0.6176007,
- "P_escada_d": 0.6176005138941847,
- "sP_escada_d": 1.6792125248651405e-07,
+ "P_escada_d": 0.6176005223740608,
+ "sP_escada_d": 1.6114446503574706e-07,
+ "barra_tess": "max(formal, |t0_a - t0_b| / 2 das duas metades do setor) - estado D",
  "n_pontos": 7,
  "n_aglomerados_tess": 4,
  "n_temporadas_swasp": 3,
@@ -10,91 +11,98 @@
  "pontos": [
   {
    "fonte": "SuperWASP 2453209",
-   "t0": -3790.935533783254,
-   "sig_min": 2.288152485604831,
-   "sig_formal_min": 2.1511024609208107,
+   "t0": -3790.9361378489098,
+   "sig_min": 2.2840060417835137,
+   "sig_formal_min": 2.157355695962906,
    "sig_metades_min": NaN,
+   "dif_metades_min": NaN,
    "E": -9099,
-   "res_linear_min": -1.7559385605272837
+   "res_linear_min": -1.8574820000503678
   },
   {
    "fonte": "SuperWASP 2454319",
-   "t0": -2680.4878913805305,
-   "sig_min": 2.8678579053738553,
-   "sig_formal_min": 2.759747989475727,
+   "t0": -2680.488493708804,
+   "sig_min": 2.867890878211472,
+   "sig_formal_min": 2.7680856361985207,
    "sig_metades_min": NaN,
+   "dif_metades_min": NaN,
    "E": -7301,
-   "res_linear_min": 0.9483466218807735
+   "res_linear_min": 0.719744446396362
   },
   {
    "fonte": "SuperWASP 2454640",
-   "t0": -2359.9533752089783,
-   "sig_min": 1.7228748041388422,
+   "t0": -2359.953988576684,
+   "sig_min": 1.694446598312299,
    "sig_formal_min": 0.778176560997963,
    "sig_metades_min": NaN,
+   "dif_metades_min": NaN,
    "E": -6782,
-   "res_linear_min": 0.7147581897152122
+   "res_linear_min": 0.43286105021252297
   },
   {
    "fonte": "TESS s19",
    "t0": 1828.6127452127405,
    "sig_min": 0.5224901922701974,
    "sig_formal_min": 0.5224901922701974,
-   "sig_metades_min": 0.2955650864461757,
+   "sig_metades_min": 0.20899607690807898,
+   "dif_metades_min": NaN,
    "E": 0,
-   "res_linear_min": -0.3182495963119436
+   "res_linear_min": -0.20559565895382548
   },
   {
    "fonte": "TESS s20",
    "t0": 1855.7878291254806,
    "sig_min": 0.6269882305605279,
    "sig_formal_min": 0.6269882305605279,
-   "sig_metades_min": 0.07389127161154392,
+   "sig_metades_min": 0.052249019227019744,
+   "dif_metades_min": NaN,
    "E": 44,
-   "res_linear_min": 0.6325991608537151
+   "res_linear_min": 0.7420825392182451
   },
   {
    "fonte": "TESS s21",
    "t0": 1884.1965179404115,
-   "sig_min": 1.847281789825559,
+   "sig_min": 1.3062254803480755,
    "sig_formal_min": 0.5224901922701974,
-   "sig_metades_min": 1.847281789825559,
+   "sig_metades_min": 1.3062254803480755,
+   "dif_metades_min": NaN,
    "E": 90,
-   "res_linear_min": -0.7150377271682373
+   "res_linear_min": -0.6088690238175332
   },
   {
    "fonte": "TESS s75",
    "t0": 3353.4686558084936,
-   "sig_min": 0.44334762966926355,
+   "sig_min": 0.41799215348873986,
    "sig_formal_min": 0.41799215348873986,
-   "sig_metades_min": 0.44334762966926355,
+   "sig_metades_min": 0.31349411536211846,
+   "dif_metades_min": NaN,
    "E": 2469,
-   "res_linear_min": -0.05004667858884204
+   "res_linear_min": -0.11530433017469477
   }
  ],
  "linear": {
-  "chi2": 2.4219246984588176,
+  "chi2": 2.6386661053934146,
   "dof": 5
  },
  "superwasp": {
   "sourceid": "1SWASP J173157.24+571042.3",
   "npts": 9996,
   "status_cobertura_por_bloco": "testado (3 blocos, 0 rejeitados)",
-  "barra_formal_min": 0.8615526929497719,
-  "barra_entre_temporadas_min": 0.8869230689555238,
-  "dispersao_entre_temporadas_min": 1.5361958178358819,
+  "barra_formal_min": 0.8559941500425339,
+  "barra_entre_temporadas_min": 0.877239852137016,
+  "dispersao_entre_temporadas_min": 1.519423994325521,
   "temporadas": [
    {
     "n": 1610,
     "n_noites": 96,
     "t_medio": 2453208.9676,
-    "n_dentro": 199,
+    "n_dentro": 200,
     "bins_vazios": 0,
     "t0": 2453209.063,
-    "sigma_formal_min": 2.1511,
+    "sigma_formal_min": 2.1574,
     "prof": 0.2095,
-    "desvio_min": -2.2234,
-    "dispersao_entre_blocos_min": 1.5362
+    "desvio_min": -2.1817,
+    "dispersao_entre_blocos_min": 1.5194
    },
    {
     "n": 1278,
@@ -103,69 +111,69 @@
     "n_dentro": 150,
     "bins_vazios": 0,
     "t0": 2454319.5106,
-    "sigma_formal_min": 2.7597,
+    "sigma_formal_min": 2.7681,
     "prof": 0.1916,
-    "desvio_min": 0.5392,
-    "dispersao_entre_blocos_min": 1.5362
+    "desvio_min": 0.5614,
+    "dispersao_entre_blocos_min": 1.5194
    },
    {
     "n": 7087,
     "n_noites": 95,
     "t_medio": 2454639.781,
-    "n_dentro": 646,
+    "n_dentro": 648,
     "bins_vazios": 0,
     "t0": 2454640.0451,
     "sigma_formal_min": 0.7782,
     "prof": 0.2404,
     "desvio_min": 0.3224,
-    "dispersao_entre_blocos_min": 1.5362
+    "dispersao_entre_blocos_min": 1.5194
    }
   ]
  },
  "parabola": {
-  "chi2": 2.2867051280153317,
+  "chi2": 2.2183219566797225,
   "dof": 4,
-  "Q_d_por_ciclo2": -7.763338669051933e-12,
-  "sQ": 2.1111969750902677e-11,
-  "dPdt_s_por_ano": -0.0007933683048212247,
-  "sdPdt_s_por_ano": 0.0021575211860177814,
+  "Q_d_por_ciclo2": -1.332747855144345e-11,
+  "sQ": 2.0556325632573196e-11,
+  "dPdt_s_por_ano": -0.001361991196245453,
+  "sdPdt_s_por_ano": 0.0021007375424128612,
   "residuos_min": [
-   -1.342,
-   1.115,
-   0.824,
-   -0.41,
-   0.542,
-   -0.803,
-   0.04
+   -1.125,
+   1.023,
+   0.636,
+   -0.366,
+   0.585,
+   -0.763,
+   0.03
   ]
  },
- "delta_chi2": 0.13521957044348598,
- "p_curvatura": 0.7130804320064662,
+ "delta_chi2": 0.4203441487136921,
+ "p_curvatura": 0.5167653706980111,
  "classe": "testado",
  "adversarial": {
-  "delta_chi2_base": 0.13521957044348598,
-  "p_base": 0.7130804320064662,
-  "delta_chi2_adversarial": 0.006517893046494638,
-  "p_adversarial": 0.9356539191238986,
+  "delta_chi2_base": 0.4203441487136921,
+  "p_base": 0.5167653706980111,
+  "delta_chi2_adversarial": 0.19573895285650877,
+  "p_adversarial": 0.6581824501318132,
   "deslocamentos_min": [
-   2.288,
-   -2.868,
-   1.723,
-   0.522,
-   -0.627,
-   1.847,
-   0.0
+   2.284,
+   2.868,
+   -1.694,
+   -0.522,
+   0.627,
+   -1.306,
+   -0.418
   ]
  },
  "teste_predizer_conferir": {
   "E_swasp": -7224,
-  "barra_total_min": 1.1811149521725162,
-  "residuo_no_linear_min": 0.1389743104670198,
-  "sigmas_linear": 0.11766366195889197,
-  "residuo_na_parabola_min": 318.0862183335563,
-  "sigmas_parabola": 269.31012747614085
+  "barra_total_min": 1.1541446002028402,
+  "residuo_no_linear_min": -0.6298579189408338,
+  "sigmas_linear": -0.5457357066264804,
+  "residuo_na_parabola_min": 171.61393282509175,
+  "sigmas_parabola": 148.69361498977747
  },
  "convencao_parabola": "parabola ponderada nos aglomerados TESS, avaliada em E do SuperWASP (cadeia_oc.ajustar)",
  "status": "ok",
- "segundos": 11.9418363571167
+ "segundos": 14.66920518875122
 }
