@@ -339,7 +339,7 @@ def um_alvo(tic, S, A, tc, brno, sem_desenho=False):
 
 
 if __name__ == "__main__":
-    assert abs(co.VIES_CADEIA_MIN - (-1.26)) < 1e-9, "H usa o estado E"
+    assert abs(co.VIES_CADEIA_MIN - (-1.26)) < 1e-9, "vies comum da cadeia trocado"   # o estado F manteve o vies comum e acrescentou a correcao de forma por alvo (Apendice D)
     S = pd.read_parquet(BASE / "jitter_primarios_26.parquet")
     hip = json.loads((BASE / "deriva_gp_26.json").read_text(encoding="utf-8"))["hiper_agrupados"]["matern32"]
     A, tc = hip["A_min"], hip["tau_c_d"]

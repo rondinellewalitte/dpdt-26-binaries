@@ -2,6 +2,6 @@
  "tic": 359588615,
  "status": "falha",
  "erro": "T14 do catalogo inaplicavel: 36.55 h para P = 4.804 d",
- "traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\Rondinelle\\PROJETOS\\nasa_discover\\src\\oc_lote.py\", line 397, in rodar_um\n    raise RuntimeError(f\"T14 do catalogo inaplicavel: {r.t14_h:.2f} h para P = {r.period_d:.3f} d\")\nRuntimeError: T14 do catalogo inaplicavel: 36.55 h para P = 4.804 d\n",
- "segundos": 0.0
+ "traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\Rondinelle\\PROJETOS\\nasa_discover\\src\\oc_lote.py\", line 402, in rodar_um\n    raise RuntimeError(f\"T14 do catalogo inaplicavel: {r.t14_h:.2f} h para P = {r.period_d:.3f} d\")\nRuntimeError: T14 do catalogo inaplicavel: 36.55 h para P = 4.804 d\n",
+ "segundos": 0.000997304916381836
 }

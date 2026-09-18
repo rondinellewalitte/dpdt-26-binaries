@@ -18,6 +18,7 @@ Duas regras do desenho que o corpo implementa:
 """
 import json
 import sys
+from functools import lru_cache
 from pathlib import Path
 
 import numpy as np
@@ -35,6 +36,29 @@ import superwasp as sw
 # decaimento orbital do WASP-4 b para dentro do vies).
 VIES_CADEIA_MIN = -1.26
 VIES_CADEIA_SIG = 0.75
+
+# ESTADO F (2026-09-17, rodada treze, bloco C): alem do vies COMUM acima, cada alvo com teste de
+# forma (vies_forma_swasp) ganha a correcao de forma DO PROPRIO ALVO nas epocas SuperWASP, e o
+# piso da barra arquival deixa de ser o 0,75 min sozinho e passa a ser hypot(0,75; sigma da media
+# do vies de forma). A tabela por alvo e escrita por `vies_forma_por_alvo.py` pela regra declarada
+# na rodada treze; alvo sem medida - os outros 62 dos 88 e o CONTROLE 142874476 - nao muda em nada,
+# e e por isso que o controle tem de reproduzir depois da troca.
+VIES_FORMA_TABELA = config.DATA / "orquestra" / "vies_forma_por_alvo.json"
+
+
+@lru_cache(maxsize=1)
+def _tabela_vies_forma():
+    if not VIES_FORMA_TABELA.exists():
+        raise FileNotFoundError(f"estado F: falta {VIES_FORMA_TABELA} (rode src/vies_forma_por_alvo.py)")
+    return json.loads(VIES_FORMA_TABELA.read_text(encoding="utf-8"))["alvos"]
+
+
+def vies_forma(tic):
+    """(correcao em min, piso da barra arquival em min) do alvo. Sem medida: (0, VIES_CADEIA_SIG)."""
+    d = _tabela_vies_forma().get(str(int(tic)))
+    if d is None:
+        return 0.0, VIES_CADEIA_SIG
+    return float(d["vies_min"]), float(np.hypot(VIES_CADEIA_SIG, float(d["sig_vies_min"])))
 
 
 def ajustar(E, t, sig, grau):

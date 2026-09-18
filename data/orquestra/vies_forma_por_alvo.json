@@ -1,0 +1,292 @@
+{
+ "regra": "forma com |log(disp_sint/disp_real)| minimo; instavel -> correcao 0 e piso 3 min",
+ "fonte": "vies_forma_swasp_resumo.parquet",
+ "alvos": {
+  "115244268": {
+   "forma": "contato",
+   "instavel": false,
+   "vies_min": 0.16680002136960717,
+   "sig_vies_min": 0.11493488228983989,
+   "razao_disp": 0.9444444444444444,
+   "forma_alt": "destacado",
+   "vies_alt_min": 0.01699614733457565,
+   "sig_vies_alt_min": 0.048161592913115524,
+   "instavel_alt": false
+  },
+  "126763885": {
+   "forma": "contato",
+   "instavel": false,
+   "vies_min": -1.8579929546025153,
+   "sig_vies_min": 0.36031032964314874,
+   "razao_disp": 0.9677418358439515,
+   "forma_alt": "destacado",
+   "vies_alt_min": 0.8340469734370708,
+   "sig_vies_alt_min": 0.1353626881829207,
+   "instavel_alt": false
+  },
+  "126945917": {
+   "forma": "destacado",
+   "instavel": false,
+   "vies_min": -2.279531655013561,
+   "sig_vies_min": 0.06462928865127827,
+   "razao_disp": 0.8505743566525402,
+   "forma_alt": "contato",
+   "vies_alt_min": 3.055854715704918,
+   "sig_vies_alt_min": 0.08540255624869024,
+   "instavel_alt": false
+  },
+  "139256217": {
+   "forma": "contato",
+   "instavel": true,
+   "vies_min": 0.0,
+   "sig_vies_min": 3.0,
+   "razao_disp": 19.540159869407667,
+   "forma_alt": "destacado",
+   "vies_alt_min": -13.346074601658717,
+   "sig_vies_alt_min": 19.847606669833322,
+   "instavel_alt": true
+  },
+  "144194304": {
+   "forma": "contato",
+   "instavel": false,
+   "vies_min": 0.3712472628057003,
+   "sig_vies_min": 0.03250835233485958,
+   "razao_disp": 0.4824218043836659,
+   "forma_alt": "destacado",
+   "vies_alt_min": -0.002280065417289734,
+   "sig_vies_alt_min": 0.017041690792764696,
+   "instavel_alt": false
+  },
+  "198388252": {
+   "forma": "contato",
+   "instavel": false,
+   "vies_min": -0.09642373905124435,
+   "sig_vies_min": 0.03808033499504972,
+   "razao_disp": 0.25889758530898954,
+   "forma_alt": "destacado",
+   "vies_alt_min": -0.0262607279419899,
+   "sig_vies_alt_min": 0.021646604852224867,
+   "instavel_alt": false
+  },
+  "198408416": {
+   "forma": "contato",
+   "instavel": false,
+   "vies_min": -0.15088202286220503,
+   "sig_vies_min": 0.0368836149427075,
+   "razao_disp": 0.49728728287563817,
+   "forma_alt": "destacado",
+   "vies_alt_min": 0.3658280834555626,
+   "sig_vies_alt_min": 0.02489272443852923,
+   "instavel_alt": false
+  },
+  "199688409": {
+   "forma": "contato",
+   "instavel": false,
+   "vies_min": -0.14050209850072862,
+   "sig_vies_min": 0.030015242891692325,
+   "razao_disp": 1.1777503320618703,
+   "forma_alt": "destacado",
+   "vies_alt_min": 0.0370713110268116,
+   "sig_vies_alt_min": 0.022245323088468705,
+   "instavel_alt": false
+  },
+  "207496824": {
+   "forma": "destacado",
+   "instavel": false,
+   "vies_min": 0.06646361187100411,
+   "sig_vies_min": 0.07225318102951209,
+   "razao_disp": 1.0604981415479202,
+   "forma_alt": "contato",
+   "vies_alt_min": 0.358508077322268,
+   "sig_vies_alt_min": 0.1456649536811687,
+   "instavel_alt": false
+  },
+  "224605072": {
+   "forma": "contato",
+   "instavel": false,
+   "vies_min": -1.2218776942626937,
+   "sig_vies_min": 0.17934769971922027,
+   "razao_disp": 0.041596638752525644,
+   "forma_alt": "destacado",
+   "vies_alt_min": -0.3352114909887314,
+   "sig_vies_alt_min": 0.09308124913748227,
+   "instavel_alt": false
+  },
+  "229461186": {
+   "forma": "contato",
+   "instavel": false,
+   "vies_min": 0.17918905537379415,
+   "sig_vies_min": 0.06851259694160108,
+   "razao_disp": 0.8061673676659984,
+   "forma_alt": "destacado",
+   "vies_alt_min": 0.17399523675441741,
+   "sig_vies_alt_min": 0.038160612485183036,
+   "instavel_alt": false
+  },
+  "229476285": {
+   "forma": "contato",
+   "instavel": true,
+   "vies_min": 0.0,
+   "sig_vies_min": 3.0,
+   "razao_disp": 0.027748054317523804,
+   "forma_alt": "destacado",
+   "vies_alt_min": 0.0805521185696125,
+   "sig_vies_alt_min": 0.22776803563847325,
+   "instavel_alt": false
+  },
+  "229687624": {
+   "forma": "contato",
+   "instavel": false,
+   "vies_min": -0.09911559850634458,
+   "sig_vies_min": 0.0545598691060932,
+   "razao_disp": 1.157575487490849,
+   "forma_alt": "destacado",
+   "vies_alt_min": -0.021121942698955537,
+   "sig_vies_alt_min": 0.027215066159737643,
+   "instavel_alt": false
+  },
+  "229914020": {
+   "forma": "destacado",
+   "instavel": false,
+   "vies_min": -0.06315409719944,
+   "sig_vies_min": 0.03447282812304441,
+   "razao_disp": 1.205574803173796,
+   "forma_alt": "contato",
+   "vies_alt_min": -0.20721196581464296,
+   "sig_vies_alt_min": 0.09445269372565837,
+   "instavel_alt": false
+  },
+  "230386284": {
+   "forma": "contato",
+   "instavel": false,
+   "vies_min": 0.08445979083900328,
+   "sig_vies_min": 0.01031152304997864,
+   "razao_disp": 0.6628784717085762,
+   "forma_alt": "destacado",
+   "vies_alt_min": -0.041675880700349804,
+   "sig_vies_alt_min": 0.004429755842692292,
+   "instavel_alt": false
+  },
+  "232634196": {
+   "forma": "contato",
+   "instavel": false,
+   "vies_min": 0.8024156878888608,
+   "sig_vies_min": 0.07257279528087536,
+   "razao_disp": 0.20781617832822746,
+   "forma_alt": "destacado",
+   "vies_alt_min": 2.880517288148403,
+   "sig_vies_alt_min": 0.04679768714494884,
+   "instavel_alt": false
+  },
+  "237116051": {
+   "forma": "contato",
+   "instavel": false,
+   "vies_min": 0.04672699123620987,
+   "sig_vies_min": 0.0895040095444742,
+   "razao_disp": NaN,
+   "forma_alt": "destacado",
+   "vies_alt_min": 0.03910168960690499,
+   "sig_vies_alt_min": 0.043249597856988946,
+   "instavel_alt": false
+  },
+  "243352373": {
+   "forma": "contato",
+   "instavel": false,
+   "vies_min": 0.09270326301455498,
+   "sig_vies_min": 0.023579151056764943,
+   "razao_disp": 0.09263316093593661,
+   "forma_alt": "destacado",
+   "vies_alt_min": -0.03417854592204094,
+   "sig_vies_alt_min": 0.011509471576699156,
+   "instavel_alt": false
+  },
+  "329246824": {
+   "forma": "destacado",
+   "instavel": false,
+   "vies_min": -0.3556198789179325,
+   "sig_vies_min": 0.012462006732167545,
+   "razao_disp": 0.4249553135355834,
+   "forma_alt": "contato",
+   "vies_alt_min": 0.27004172578454017,
+   "sig_vies_alt_min": 0.01686643980122174,
+   "instavel_alt": false
+  },
+  "329248002": {
+   "forma": "contato",
+   "instavel": false,
+   "vies_min": -2.9298403184085884,
+   "sig_vies_min": 0.16119423530573695,
+   "razao_disp": 0.5436241470407288,
+   "forma_alt": "destacado",
+   "vies_alt_min": 0.34270079523324964,
+   "sig_vies_alt_min": 0.10422904792310124,
+   "instavel_alt": false
+  },
+  "329289186": {
+   "forma": "contato",
+   "instavel": false,
+   "vies_min": 0.44549334596229506,
+   "sig_vies_min": 0.07543318133436841,
+   "razao_disp": 0.36584478071714926,
+   "forma_alt": "destacado",
+   "vies_alt_min": -0.08966503500938415,
+   "sig_vies_alt_min": 0.04020153865180655,
+   "instavel_alt": false
+  },
+  "359552377": {
+   "forma": "contato",
+   "instavel": true,
+   "vies_min": 0.0,
+   "sig_vies_min": 3.0,
+   "razao_disp": 1.3596730415730418,
+   "forma_alt": "destacado",
+   "vies_alt_min": -1.612956867814064,
+   "sig_vies_alt_min": 0.5314255697057043,
+   "instavel_alt": true
+  },
+  "377253090": {
+   "forma": "contato",
+   "instavel": false,
+   "vies_min": -0.34315151229500773,
+   "sig_vies_min": 0.029333866473504857,
+   "razao_disp": 0.5198237715168413,
+   "forma_alt": "destacado",
+   "vies_alt_min": -0.7251221005618572,
+   "sig_vies_alt_min": 0.02423107515257573,
+   "instavel_alt": false
+  },
+  "390021728": {
+   "forma": "contato",
+   "instavel": false,
+   "vies_min": -0.07127499323569701,
+   "sig_vies_min": 0.01801602531469477,
+   "razao_disp": 0.23364471976373982,
+   "forma_alt": "destacado",
+   "vies_alt_min": 0.001293913722038269,
+   "sig_vies_alt_min": 0.00969521898146277,
+   "instavel_alt": false
+  },
+  "392536812": {
+   "forma": "contato",
+   "instavel": false,
+   "vies_min": -0.3856839548414142,
+   "sig_vies_min": 0.0667334476252519,
+   "razao_disp": 0.43012056976733587,
+   "forma_alt": "destacado",
+   "vies_alt_min": -0.17661099806427955,
+   "sig_vies_alt_min": 0.04044525361415098,
+   "instavel_alt": false
+  },
+  "424461577": {
+   "forma": "destacado",
+   "instavel": false,
+   "vies_min": -0.07947663322091103,
+   "sig_vies_min": 0.014760908312064015,
+   "razao_disp": 1.3423647595873829,
+   "forma_alt": "contato",
+   "vies_alt_min": -0.24757341742515565,
+   "sig_vies_alt_min": 0.019688737857621624,
+   "instavel_alt": false
+  }
+ }
+}

@@ -3,5 +3,5 @@
  "status": "falha",
  "erro": "FALHA [superwasp]: 1SWASP J211807.37-514708.6 nao baixou em 4 tentativas: veio vazio (549 bytes). Isso e resposta ruim, nao ausencia de dado.",
  "traceback": "_lote\n    t, f, sig_mad = sw.carregar(sourceid, ra, dec)\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Rondinelle\\PROJETOS\\nasa_discover\\src\\superwasp.py\", line 114, in carregar\n    p = baixar_curva(sourceid)\n        ^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Rondinelle\\PROJETOS\\nasa_discover\\src\\superwasp.py\", line 91, in baixar_curva\n    raise RuntimeError(\"FALHA [superwasp]: %s nao baixou em 4 tentativas: %s. Isso e \"\nRuntimeError: FALHA [superwasp]: 1SWASP J211807.37-514708.6 nao baixou em 4 tentativas: veio vazio (549 bytes). Isso e resposta ruim, nao ausencia de dado.\n",
- "segundos": 42.03381681442261
+ "segundos": 40.67614412307739
 }

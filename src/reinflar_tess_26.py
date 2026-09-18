@@ -111,6 +111,15 @@ def resumo(R, t26):
     med, sims = mediana_esperada_chi2r(dofs)
     lo, hi = np.percentile(sims, [2.5, 97.5])
     obs = float(t26.chi2r.median())
+    # a 5.2.1 cita estes quatro numeros; ate a rodada catorze eles so existiam neste print, e
+    # por isso o registro nao os via e o texto podia envelhecer sem que nada acusasse
+    adeq = t26[~t26.inadequada]
+    (BASE / "calibracao_chi2r.json").write_text(json.dumps({
+        "mediana_esperada": med, "p2.5": float(lo), "p97.5": float(hi), "n_sim": int(len(sims)),
+        "mediana_observada": obs, "P_maior_ou_igual": float((sims >= obs).mean()),
+        "agregado_26": float(t26.chi2.sum() / t26.dof.sum()), "dof_26": int(t26.dof.sum()),
+        "agregado_adequados": float(adeq.chi2.sum() / adeq.dof.sum()), "n_adequados": int(len(adeq)),
+        "fator_barra_implicado": float(np.sqrt(obs / med))}, indent=1), encoding="utf-8")
     print(f"\n== calibracao das barras pelo chi2_red: mediana esperada com barras corretas (gl {np.bincount(dofs)[1:].tolist()}) = {med:.2f} "
           f"[{lo:.2f}, {hi:.2f}]; observada com as barras originais {obs:.2f} (P(>= {obs:.2f}) = {(sims >= obs).mean():.4f}; "
           f"fator de barra implicado sqrt({obs:.2f}/{med:.2f}) = {np.sqrt(obs / med):.2f})")

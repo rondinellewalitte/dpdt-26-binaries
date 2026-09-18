@@ -11,33 +11,39 @@
  "pontos": [
   {
    "fonte": "SuperWASP 2453231",
-   "t0": -3769.3441091258114,
-   "sig_min": 3.1055724462710503,
+   "t0": -3769.344004346629,
+   "sig_min": 3.1057914643596405,
    "sig_formal_min": 1.3331534340977669,
    "sig_metades_min": NaN,
    "dif_metades_min": NaN,
+   "vies_forma_min": -0.15088202286220503,
+   "piso_arquival_min": 0.7509063863433589,
    "E": -15348,
-   "res_linear_min": 16.891587438658462
+   "res_linear_min": 17.000076939730207
   },
   {
    "fonte": "SuperWASP 2454319",
-   "t0": -2680.6133429709857,
-   "sig_min": 3.1055724462710503,
+   "t0": -2680.6132381918032,
+   "sig_min": 3.1057914643596405,
    "sig_formal_min": 0.860045962035656,
    "sig_metades_min": NaN,
    "dif_metades_min": NaN,
+   "vies_forma_min": -0.15088202286220503,
+   "piso_arquival_min": 0.7509063863433589,
    "E": -12363,
-   "res_linear_min": 11.867910400396795
+   "res_linear_min": 11.983943478116998
   },
   {
    "fonte": "SuperWASP 2454640",
-   "t0": -2360.00912333364,
-   "sig_min": 3.1055724462710503,
+   "t0": -2360.0090185544577,
+   "sig_min": 3.1057914643596405,
    "sig_formal_min": 0.31513139605522156,
    "sig_metades_min": NaN,
    "dif_metades_min": NaN,
+   "vies_forma_min": -0.15088202286220503,
+   "piso_arquival_min": 0.7509063863433589,
    "E": -11484,
-   "res_linear_min": 14.851933487734641
+   "res_linear_min": 14.970187941362383
   },
   {
    "fonte": "TESS s19",
@@ -46,8 +52,10 @@
    "sig_formal_min": 0.30000000006111804,
    "sig_metades_min": 0.24999999999636202,
    "dif_metades_min": NaN,
+   "vies_forma_min": NaN,
+   "piso_arquival_min": NaN,
    "E": 0,
-   "res_linear_min": -0.3991993673480465
+   "res_linear_min": -0.40280501521920087
   },
   {
    "fonte": "TESS s20",
@@ -56,8 +64,10 @@
    "sig_formal_min": 0.24999999999636202,
    "sig_metades_min": 0.199999999931606,
    "dif_metades_min": NaN,
+   "vies_forma_min": NaN,
+   "piso_arquival_min": NaN,
    "E": 74,
-   "res_linear_min": -0.5050924992610817
+   "res_linear_min": -0.5085111370499362
   },
   {
    "fonte": "TESS s21",
@@ -66,8 +76,10 @@
    "sig_formal_min": 0.24999999999636202,
    "sig_metades_min": 0.15000000003055902,
    "dif_metades_min": NaN,
+   "vies_forma_min": NaN,
+   "piso_arquival_min": NaN,
    "E": 153,
-   "res_linear_min": -0.41814057276496897
+   "res_linear_min": -0.4213595647524926
   },
   {
    "fonte": "TESS s75",
@@ -76,12 +88,14 @@
    "sig_formal_min": 0.25000000016007107,
    "sig_metades_min": 0.15000000003055902,
    "dif_metades_min": NaN,
+   "vies_forma_min": NaN,
+   "piso_arquival_min": NaN,
    "E": 4181,
-   "res_linear_min": 0.9178386742860312
+   "res_linear_min": 0.9247990878793644
   }
  ],
  "linear": {
-  "chi2": 89.18756680813289,
+  "chi2": 90.54783659938224,
   "dof": 5
  },
  "superwasp": {
@@ -131,30 +145,30 @@
   ]
  },
  "parabola": {
-  "chi2": 2.5305989204501134,
+  "chi2": 2.57926745143956,
   "dof": 4,
-  "Q_d_por_ciclo2": 5.6759166176784585e-11,
-  "sQ": 6.097253647676772e-12,
-  "dPdt_s_por_ano": 0.009821823889710058,
-  "sdPdt_s_por_ano": 0.001055092165234589,
+  "Q_d_por_ciclo2": 5.7190136259534515e-11,
+  "sQ": 6.0975780386854056e-12,
+  "dPdt_s_por_ano": 0.009896400606382033,
+  "sdPdt_s_por_ano": 0.0010551482990993517,
   "residuos_min": [
-   -2.254,
-   -0.453,
-   4.263,
+   -2.292,
+   -0.431,
+   4.3,
    0.036,
    -0.068,
    0.019,
    0.014
   ]
  },
- "delta_chi2": 86.65696788768277,
- "p_curvatura": 1.2907500400632248e-20,
+ "delta_chi2": 87.96856914794267,
+ "p_curvatura": 6.6502857164693076e-21,
  "classe": "testado",
  "adversarial": {
-  "delta_chi2_base": 86.65696788768277,
-  "p_base": 1.2907500400632248e-20,
-  "delta_chi2_adversarial": 48.08692554470132,
-  "p_adversarial": 4.077362391569863e-12,
+  "delta_chi2_base": 87.96856914794267,
+  "p_base": 6.6502857164693076e-21,
+  "delta_chi2_adversarial": 49.06552889782202,
+  "p_adversarial": 2.47552615871755e-12,
   "deslocamentos_min": [
    -3.106,
    -3.106,
@@ -175,5 +189,5 @@
  },
  "convencao_parabola": "parabola ponderada nos aglomerados TESS, avaliada em E do SuperWASP (cadeia_oc.ajustar)",
  "status": "ok",
- "segundos": 14.331827878952026
+ "segundos": 16.547558307647705
 }

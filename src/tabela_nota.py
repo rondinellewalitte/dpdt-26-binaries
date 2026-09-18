@@ -50,9 +50,9 @@ GUARDS_TABELA2 = [
     ("download", lambda m: "veio vazio" in m, "SuperWASP light-curve download returned an empty file in four attempts (a different operation from the cone search of Table 1, step 4)",
      "archive-side failure; recoverable if the archive serves the file"),
     ("escada", lambda m: "escada nao fechou" in m, "Cycle count between TESS sectors ambiguous (period ladder did not close)",
-     "local sector coverage; intermediate sectors were added from MAST and none was recovered (Appendix A)"),
+     "local sector coverage; intermediate sectors were added from MAST and none was recovered (per-target outcome in the deposit)"),
     ("T14", lambda m: "T14 do catalogo inaplicavel" in m, "No applicable eclipse duration in the catalogue (4 NaN; 1 contact-binary width; 1 W UMa)",
-     "catalogue gap; T14 was measured on the TESS curve for five and none was recovered (Appendix A)"),
+     "catalogue gap; T14 was measured on the TESS curve for five and none was recovered (per-target outcome in the deposit)"),
 ]
 
 
@@ -164,6 +164,8 @@ def janela():
         sd = pd.read_parquet(BASE / "caso_completo_d9_sem_desenho.parquet").set_index("tic")
         ra = pd.read_parquet(BASE / "ruido_admitido_d9.parquet")
         ra = ra[ra.nivel == 0.95].set_index("tic")
+        rec_gp = pd.read_parquet(BASE / "reconcilia_hi_d9.parquet").set_index("tic")
+        rec_n = {int(t): int(rec_gp.loc[t, "n_tess"]) for t in rec_gp.index}
         sv = pd.read_parquet(BASE / "sensib_vies_26.parquet")
         sv = sv[(sv.metodo == "diagonal") & (sv.sigma_v_min == sv.sigma_v_min.min())]
         piv = sv.pivot(index="tic", columns="delta_min", values="dPdt")
@@ -177,13 +179,33 @@ def janela():
         for t in sd.index:
             if not bool(sd.loc[t, "testavel"]):
                 continue
-            if int(t) == 424461577:                # fora da classificacao: z e DMD nao se aplicam
-                out.setdefault("janela", {})[int(t)] = {"dPdt": float(sd.loc[t, "dPdt_sem"]), "s": float(sd.loc[t, "s_sem"]),
-                                                        "n": int(sd.loc[t, "n_tess_sem"]), "z_lo": None, "z_hi": None,
-                                                        "classe": "published LTTE", "dmd": None}
+            if int(t) == 424461577:
+                # fora da CLASSIFICACAO (z e DMD nao se aplicam), mas a linha tem de ser
+                # comensuravel com as outras: coeficiente e N do MESMO bloco e do MESMO modelo
+                # admitido que as demais, e nao do ajuste sem as epocas do desenho (rodada
+                # dezessete: a coluna trazia 36 epocas onde as outras traziam 40)
+                iw = int(np.argmax(ra.loc[t, "s_adm"]))
+                out.setdefault("janela", {})[int(t)] = {
+                    "dPdt": float(ra.loc[t, "dPdt_adm"][iw]), "s": float(ra.loc[t, "s_adm"][iw]),
+                    "n": int(rec_n.get(int(t), sd.loc[t, "n_tess_sem"])), "z_lo": None, "z_hi": None,
+                    "gp_dPdt": float(rec_gp.loc[t, "GP_agrupado_dPdt"]), "gp_s": float(rec_gp.loc[t, "GP_agrupado_s"]),
+                    "gp_chi2r": float(rec_gp.loc[t, "GP_agrupado_chi2r"]),
+                    "classe": "published LTTE", "dmd": None}
                 continue
+            # COMENSURABILIDADE (rodada catorze, M3): a linha inteira vem do MESMO modelo. Ate
+            # aqui o coeficiente saia do bloco so-TESS sem as epocas do desenho e o z saia dos
+            # modelos admitidos - duas fontes na mesma linha, e uma delas (o GP agrupado, que a
+            # 5.3.2 diz nao ser admitido em nenhum dos oito) na coluna principal. Agora
+            # coeficiente, barra, z, classe e DMD saem todos dos admitidos, e o GP agrupado tem
+            # coluna propria, rotulada.
+            adm = list(ra.loc[t, "dPdt_adm"]), list(ra.loc[t, "s_adm"])
+            i_pior = int(np.argmax(adm[1]))          # o menos favoravel: maior sigma (e o DMD)
             out.setdefault("janela", {})[int(t)] = {
-                "dPdt": float(sd.loc[t, "dPdt_sem"]), "s": float(sd.loc[t, "s_sem"]), "n": int(sd.loc[t, "n_tess_sem"]),
+                "dPdt": float(adm[0][i_pior]), "s": float(adm[1][i_pior]),
+                "dPdt_lo": float(min(adm[0])), "dPdt_hi": float(max(adm[0])), "n_adm": len(adm[0]),
+                "modelos": list(ra.loc[t, "admitidos"]), "n": int(rec_n.get(int(t), sd.loc[t, "n_tess_sem"])),
+                "gp_dPdt": float(rec_gp.loc[t, "GP_agrupado_dPdt"]), "gp_s": float(rec_gp.loc[t, "GP_agrupado_s"]),
+                "gp_chi2r": float(rec_gp.loc[t, "GP_agrupado_chi2r"]),
                 "z_lo": float(ra.loc[t, "z_min"]), "z_hi": float(ra.loc[t, "z_max"]),
                 "classe": CLASSE_CURTA.get(str(ra.loc[t, "classe"]), str(ra.loc[t, "classe"])),
                 "dmd": float(ra.loc[t, "DMD_3sigma_adm"])}
@@ -193,12 +215,43 @@ def janela():
     return out
 
 
+def bloco_minimo():
+    """C2 da rodada treze: o menor bloco comum arquival (min) que derrota cada deteccao, da
+    varredura de 0,75 a 10 min em `vies_forma_propagado_26.py`. Fora da grade -> "> 10"; alvo que
+    nao e deteccao nao tem o que derrotar. A varredura roda DEPOIS de tabela_26.parquet existir,
+    entao a primeira passada das tabelas pode nao ter o arquivo: a coluna sai como "--" e
+    confere_nota acusa. A ordem canonica e tabela_nota -> vies_forma_propagado_26 -> tabela_nota."""
+    arq = BASE / "vies_forma_propagado_varredura.parquet"
+    if not arq.exists():
+        print("  AVISO: varredura do bloco comum ausente; a coluna da Tabela 3 sai vazia "
+              "(rode src/vies_forma_propagado_26.py e regere as tabelas)")
+        return {}
+    v = pd.read_parquet(arq).set_index("tic")
+    if "em_D11" not in v.columns or "bloco_min_para_perder_deteccao" not in v.columns:
+        # varredura de um estado anterior (esquema antigo, so os 8 do teste de janela): tratar
+        # como ausente, senao a Tabela 3 sai com a coluna de outro estado da cadeia
+        print("  AVISO: varredura com esquema antigo; a coluna da Tabela 3 sai vazia "
+              "(rode src/vies_forma_propagado_26.py e regere as tabelas)")
+        return {}
+    out = {}
+    for tic, r in v.iterrows():
+        if not bool(r.em_D11):
+            out[int(tic)] = None
+            continue
+        b = r.bloco_min_para_perder_deteccao
+        out[int(tic)] = "> 10" if b is None or (isinstance(b, float) and np.isnan(b)) else f"{float(b):g}"
+    return out
+
+
 def md_tabela3(d):
-    out = ["| TIC | Name | RA, Dec (J2000, deg) | Tmag | P (d) | N (TESS+SW) | d.o.f. | span (yr) | quadratic coefficient as dP/dt (s yr⁻¹) | χ²_red | p_gof | p_curv | p_adv | class |",
-           "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
+    bm = bloco_minimo()
+    out = ["| TIC | Name | RA, Dec (J2000, deg) | Tmag | P (d) | N (TESS+SW) | d.o.f. | span (yr) | quadratic coefficient as dP/dt (s yr⁻¹) | χ²_red | p_gof | p_curv | p_adv | class | archival offset that defeats it (min) |",
+           "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
     for x in d.itertuples():
+        b = bm.get(int(x.TIC), "--") if bm else "--"
         out.append(f"| {x.TIC} | {x.nome} | {x.ra:.4f}, {x.dec:+.4f} | {x.tmag:.1f} | {x.P:.4f} | {x.n} ({x.nT}+{x.nS}) | {x.dof} | "
-                   f"{x.span:.1f} | {x.dPdt:+.4f} ± {x.s:.4f} | {x.chi2r:.2f} | {fmt_p(x.p_gof)} | {fmt_p(x.p)} | {fmt_p(x.padv)} | {x.classe} |")
+                   f"{x.span:.1f} | {x.dPdt:+.4f} ± {x.s:.4f} | {x.chi2r:.2f} | {fmt_p(x.p_gof)} | {fmt_p(x.p)} | {fmt_p(x.padv)} | {x.classe} | "
+                   f"{'—' if b is None else b} |")
     return "\n".join(out)
 
 
@@ -206,12 +259,12 @@ def md_tabela6(d):
     """Tabela 6: o teste de janela (Seccao 5.5) e a sensibilidade ao vies (Seccao 3.4), 26 linhas."""
     J = janela()
     jan, dv = J.get("janela", {}), J.get("dvies", {})
-    out = ["| TIC | Name | complete block (s yr⁻¹) | N | z (admitted) | class | MDD | Δ per 2.14 min |",
-           "|---|---|---|---|---|---|---|---|"]
+    out = ["| TIC | Name | block, admitted (s yr⁻¹) | N | z (adm.) | class | MDD | pooled GP (s yr⁻¹, χ²/ν) | Δ per 2.14 min |",
+           "|---|---|---|---|---|---|---|---|---|"]
     for x in d.itertuples():
         w = jan.get(int(x.TIC))
         if w is None:
-            col = "— | — | — | not in D9 | —"
+            col = "— | — | — | not in D9 | — | —"
         else:
             bloco = "—" if w["dPdt"] is None else f"{w['dPdt']:+.4f} ± {w['s']:.4f}"
             if w["z_lo"] is None:
@@ -219,8 +272,46 @@ def md_tabela6(d):
             else:
                 zz = f"{w['z_lo']:+.1f}" if abs(w["z_hi"] - w["z_lo"]) < 0.05 else f"{w['z_lo']:+.1f} to {w['z_hi']:+.1f}"
                 dmd = f"{w['dmd']:.4f}"
-            col = f"{bloco} | {w['n'] if w['n'] else '—'} | {zz} | {w['classe']} | {dmd}"
+            gp = "—" if w.get("gp_dPdt") is None else f"{w['gp_dPdt']:+.4f} ± {w['gp_s']:.4f} ({w['gp_chi2r']:.2f})"
+            col = f"{bloco} | {w['n'] if w['n'] else '—'} | {zz} | {w['classe']} | {dmd} | {gp}"
         out.append(f"| {x.TIC} | {x.nome} | {col} | {dv.get(int(x.TIC), float('nan')):.4f} |")
+    return "\n".join(out)
+
+
+GRADE_BLOCO = ["0.75", "1.0", "1.5", "2.0", "2.5", "3.0", "4.0", "5.0", "7.0", "10.0"]
+
+
+def md_tabela7():
+    """Tabela 6 (Apendice E): a varredura do bloco comum arquival, 26 linhas.
+
+    |z| do teste de janela em cada bloco (— onde o alvo nao esta no teste), asterisco onde a
+    deteccao do desenho ja nao sobrevive naquele bloco, e o menor bloco da grade que a derrota."""
+    arq = BASE / "vies_forma_propagado_varredura.parquet"
+    if not arq.exists():
+        print("  AVISO: varredura ausente; Tabela 6 nao gerada (rode src/vies_forma_propagado_26.py)")
+        return None
+    v = pd.read_parquet(arq).set_index("tic")
+    out = ["| TIC | class (window test) | " + " | ".join(f"{float(g):g}" for g in GRADE_BLOCO) + " | offset that defeats it |",
+           "|---|---|" + "---|" * (len(GRADE_BLOCO) + 1)]
+    for tic in sorted(v.index):
+        r = v.loc[tic]
+        # PODA (rodada quinze): a tabela impressa traz so as 11 deteccoes - as linhas dos 15 que
+        # nao sao deteccao nao tem o que ser derrotado e nao entram no artigo; a varredura
+        # completa dos 26 esta no deposito (vies_forma_propagado_varredura.parquet)
+        if not bool(r["em_D11"]):
+            continue
+        cel = []
+        for g in GRADE_BLOCO:
+            z = r["z_por_bloco"].get(g)
+            # o asterisco marca uma DETECCAO que nao sobrevive naquele bloco; num alvo que nao e
+            # deteccao nao ha o que marcar (senao a linha inteira sai com asterisco sem sentido)
+            marca = "" if (not r["em_D11"] or r["detecta_por_bloco"][g]) else "*"
+            cel.append(("—" if z is None else f"{abs(float(z)):.1f}") + marca)
+        b = r["bloco_min_para_perder_deteccao"]
+        alvo = f"{float(b):g}" if not (b is None or pd.isna(b)) else ("> 10" if r["em_D11"] else "—")
+        classe = CLASSE_CURTA.get(r["classe_hoje"], r["classe_hoje"]) if r["no_teste_de_janela"] else "—"
+        out.append(f"| {tic} | {classe} | "
+                   + " | ".join(cel) + f" | {alvo} |")
     return "\n".join(out)
 
 
@@ -333,19 +424,26 @@ if __name__ == "__main__":
         f"Sign test sigma<{SIGMA_PRECISO}: {c_prec['pos']}+/{c_prec['neg']}- p={c_prec['p_sinal']:.2f}; surviving {c_prec['surv']}/{c_prec['n']}",
     ]
     t2 = tabela2()
+    # A Tabela 7 (varredura de offset, no apendice) tambem vai para o arquivo gerado: ate a rodada
+    # dezessete ela era montada so na hora de inserir, e por isso a guarda de blocos gerados nao
+    # tinha com que compara-la - uma edicao feita dentro dela na nota passaria batida ate a
+    # proxima insercao a desfazer em silencio. E o defeito do item 22 dentro da guarda do item 22.
+    t7 = md_tabela7()
     md = ("# Tabelas da nota (geradas por src/tabela_nota.py)\n\n## Tabela 2\n\n" + t2 + "\n\n## Tabela 3\n\n" + t3
-          + "\n\n## Tabela 4\n\n" + t4 + "\n\n## Tabela 6\n\n" + t6 + "\n\n## Resumo\n\n" + "\n".join("- " + s for s in resumo) + "\n")
+          + "\n\n## Tabela 4\n\n" + t4 + "\n\n## Tabela 6\n\n" + t6 + "\n\n## Tabela 7\n\n" + (t7 or "(sem varredura)")
+          + "\n\n## Resumo\n\n" + "\n".join("- " + s for s in resumo) + "\n")
     (config.ROOT / "reports" / "tabelas_nota.md").write_text(md, encoding="utf-8")
     # a nota copia dali, nao digita: os blocos entre marcadores sao substituidos
     nota = config.ROOT / "reports" / "dpdt_note.md"
     if nota.exists() and "--inserir" in sys.argv:
         txt = nota.read_text(encoding="utf-8")
-        for rot, bloco in (("tabela2", t2), ("tabela3", t3), ("tabela4", t4), ("tabela6", t6)):
+        blocos = [("tabela2", t2), ("tabela3", t3), ("tabela4", t4), ("tabela6", t6)] + ([("tabela7", t7)] if t7 else [])
+        for rot, bloco in blocos:
             ini, fim = f"<!-- {rot}:inicio -->", f"<!-- {rot}:fim -->"
             if txt.count(ini) != 1 or txt.count(fim) != 1:
                 raise RuntimeError(f"marcadores {rot} ausentes ou duplicados na nota")
             txt = txt[:txt.index(ini) + len(ini)] + "\n" + bloco + "\n" + txt[txt.index(fim):]
         nota.write_text(txt, encoding="utf-8")
-        print("nota: Tabelas 2, 3, 4 e 6 inseridas entre marcadores")
+        print(f"nota: {len(blocos)} tabelas inseridas entre marcadores ({', '.join(r for r, _ in blocos)})")
     print("\n".join(resumo))
     print(f"\n-> {BASE / 'tabela_26.parquet'} e reports/tabelas_nota.md")

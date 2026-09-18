@@ -11,33 +11,39 @@
  "pontos": [
   {
    "fonte": "SuperWASP 2453942",
-   "t0": -3058.023046652231,
-   "sig_min": 3.338071547399095,
+   "t0": -3058.0229490813294,
+   "sig_min": 3.338206490072362,
    "sig_formal_min": 3.252725265920162,
    "sig_metades_min": NaN,
    "dif_metades_min": NaN,
+   "vies_forma_min": -0.14050209850072862,
+   "piso_arquival_min": 0.750600369574814,
    "E": -5628,
-   "res_linear_min": -3.3002282994857524
+   "res_linear_min": -3.259449292163481
   },
   {
    "fonte": "SuperWASP 2454257",
-   "t0": -2742.8425627838856,
-   "sig_min": 1.6092190975419582,
+   "t0": -2742.842465212984,
+   "sig_min": 1.609498996178501,
    "sig_formal_min": 0.42197518050670624,
    "sig_metades_min": NaN,
    "dif_metades_min": NaN,
+   "vies_forma_min": -0.14050209850072862,
+   "piso_arquival_min": 0.750600369574814,
    "E": -5265,
-   "res_linear_min": -1.3348793832119554
+   "res_linear_min": -1.2884635342197726
   },
   {
    "fonte": "SuperWASP 2454630",
-   "t0": -2369.489617510609,
-   "sig_min": 1.6092190975419582,
+   "t0": -2369.4895199397074,
+   "sig_min": 1.609498996178501,
    "sig_formal_min": 0.4688611999154091,
    "sig_metades_min": NaN,
    "dif_metades_min": NaN,
+   "vies_forma_min": -0.14050209850072862,
+   "piso_arquival_min": 0.750600369574814,
    "E": -4835,
-   "res_linear_min": -0.9463339252397418
+   "res_linear_min": -0.893240826917463
   },
   {
    "fonte": "TESS s19",
@@ -46,8 +52,10 @@
    "sig_formal_min": 0.4594849383101973,
    "sig_metades_min": 0.0,
    "dif_metades_min": NaN,
+   "vies_forma_min": NaN,
+   "piso_arquival_min": NaN,
    "E": 0,
-   "res_linear_min": 0.04998402942874236
+   "res_linear_min": 0.037655270753020886
   },
   {
    "fonte": "TESS s20",
@@ -56,8 +64,10 @@
    "sig_formal_min": 0.45948493847390637,
    "sig_metades_min": 0.3446137038554298,
    "dif_metades_min": NaN,
+   "vies_forma_min": NaN,
+   "piso_arquival_min": NaN,
    "E": 31,
-   "res_linear_min": 0.565897037886316
+   "res_linear_min": 0.554049662387115
   },
   {
    "fonte": "TESS s21",
@@ -66,8 +76,10 @@
    "sig_formal_min": 0.45948493847390637,
    "sig_metades_min": 0.22974246923695318,
    "dif_metades_min": NaN,
+   "vies_forma_min": NaN,
+   "piso_arquival_min": NaN,
    "E": 64,
-   "res_linear_min": 0.39622315980523126
+   "res_linear_min": 0.38488822439830983
   },
   {
    "fonte": "TESS s75",
@@ -76,12 +88,14 @@
    "sig_formal_min": 0.3446137038554298,
    "sig_metades_min": 0.0,
    "dif_metades_min": NaN,
+   "vies_forma_min": NaN,
+   "piso_arquival_min": NaN,
    "E": 1756,
-   "res_linear_min": -0.42951834395353217
+   "res_linear_min": -0.41457907755102497
   }
  ],
  "linear": {
-  "chi2": 5.837082365776543,
+  "chi2": 5.511848584035195,
   "dof": 5
  },
  "superwasp": {
@@ -131,30 +145,30 @@
   ]
  },
  "parabola": {
-  "chi2": 0.88820080395062,
+  "chi2": 0.8963626437785908,
   "dof": 4,
-  "Q_d_por_ciclo2": -7.926850304664674e-11,
-  "sQ": 3.563256800614124e-11,
-  "dPdt_s_por_ano": -0.005762142051498953,
-  "sdPdt_s_por_ano": 0.0025901828673396176,
+  "Q_d_por_ciclo2": -7.655589260714376e-11,
+  "sQ": 3.5634437262919965e-11,
+  "dPdt_s_por_ano": -0.00556495847817479,
+  "sdPdt_s_por_ano": 0.0025903187463164595,
   "residuos_min": [
-   -1.401,
-   0.201,
-   0.199,
+   -1.425,
+   0.195,
+   0.213,
    -0.298,
    0.225,
    0.064,
    0.001
   ]
  },
- "delta_chi2": 4.948881561825923,
- "p_curvatura": 0.02610755291798161,
+ "delta_chi2": 4.615485940256605,
+ "p_curvatura": 0.03168451660481017,
  "classe": "testado",
  "adversarial": {
-  "delta_chi2_base": 4.948881561825923,
-  "p_base": 0.02610755291798161,
-  "delta_chi2_adversarial": 0.11586506908169958,
-  "p_adversarial": 0.7335631614521874,
+  "delta_chi2_base": 4.615485940256605,
+  "p_base": 0.03168451660481017,
+  "delta_chi2_adversarial": 0.17360049138833478,
+  "p_adversarial": 0.6769315617514127,
   "deslocamentos_min": [
    3.338,
    1.609,
@@ -175,5 +189,5 @@
  },
  "convencao_parabola": "parabola ponderada nos aglomerados TESS, avaliada em E do SuperWASP (cadeia_oc.ajustar)",
  "status": "ok",
- "segundos": 16.638255834579468
+ "segundos": 21.441091775894165
 }

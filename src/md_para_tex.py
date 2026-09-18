@@ -63,20 +63,19 @@ SECOES = {  # titulo do markdown -> (comando, rotulo)
     "6. What is and is not claimed": ("section", "s:claim"),
     "Data and code": ("section", "s:data"),
     "Data availability": ("section", "s:avail"),
-    "Appendix A. Outcome of the recovery pass, per target": ("appendix", "a:A"),
-    "Appendix B. Control target and period-ladder audit": ("appendix", "a:B"),
-    "Appendix C. The orbit population, the efficiency, and the occurrence numbers": ("appendix", "a:C"),
-    "Appendix E. The residual test: simulations and their expectations": ("appendix", "a:E"),
-    "Appendix D. Record of readings withdrawn between versions, and of the changes of state": ("appendix", "a:D"),
+    "Appendix A. Control target and period-ladder audit": ("appendix", "a:A"),
+    "Appendix B. The orbit population, the efficiency, and the occurrence numbers": ("appendix", "a:B"),
+    "Appendix D. The residual test: simulations and their expectations": ("appendix", "a:D"),
+    "Appendix C. Record of readings withdrawn between versions, and of the changes of state": ("appendix", "a:C"),
 }
 REF_SECAO = {"3.1": "ss:epocas", "3.2": "ss:escada", "3.3": "ss:barras", "3.4": "ss:vies", "3.5": "ss:testes",
              "5.1": "ss:formais", "5.2": "ss:qualbarra", "5.3": "ss:setores", "5.4": "ss:orb", "5.5": "ss:externo",
              "5.2.1": "sss:esperado", "5.2.2": "sss:decomp", "5.2.3": "sss:nulo", "5.2.4": "sss:orbitas", "5.2.5": "sss:secular",
              "5.3.1": "sss:secundarios", "5.3.2": "sss:teto",
              "1": "s:intro", "2": "s:sel", "3": "s:met", "4": "s:res", "5": "s:val", "6": "s:claim"}
-REF_TABELA = {"1": "t:funil", "2": "t:naomedidos", "3": "t:coef", "4": "t:dist", "5": "t:janela"}
+REF_TABELA = {"1": "t:funil", "2": "t:naomedidos", "3": "t:coef", "4": "t:dist", "5": "t:janela", "6": "t:varredura"}
 REF_FIG = {"1": "f:dpdt", "2": "f:cvdra", "3": "f:barras", "4": "f:compl", "5": "f:v527"}   # CV Dra abre a Secao 5 (revisao externa, item 6)
-REF_APX = {"A": "a:A", "B": "a:B", "C": "a:C", "D": "a:D", "E": "a:E"}
+REF_APX = {"A": "a:A", "B": "a:B", "C": "a:C", "D": "a:D"}
 
 
 # ---------- conversao inline ----------
@@ -91,10 +90,11 @@ SIMBOLOS = [
     ("√2–√3", "$\\sqrt{2}$--$\\sqrt{3}$"), ("|t_a − t_b|/√2", "$|t_a - t_b|/\\sqrt{2}$"), ("|t_a − t_b|/2", "$|t_a - t_b|/2$"), ("|d₁ − d₂|/√2", "$|d_1 - d_2|/\\sqrt{2}$"), ("|Δ|/√2", "$|\\Delta|/\\sqrt{2}$"), ("±Δ/2", "$\\pm\\Delta/2$"), ("difference Δ", "difference $\\Delta$"),
     ("±(d₁ − d₂)/2", "$\\pm(d_1 - d_2)/2$"), ("z² = r²/s²", "$z^2 = r^2/s^2$"), ("z² = 0.5", "$z^2 = 0.5$"), ("√n", "$\\sqrt{n}$"),
     ("F(1, ν)", "$F(1,\\nu)$"), ("ν/(ν − 2)", "$\\nu/(\\nu-2)$"), ("ν ≤ 2", "$\\nu \\le 2$"), ("ν = 1–2", "$\\nu$ = 1--2"),
-    ("10⁻¹⁰", "$10^{-10}$"), ("10⁻³⁰", "$10^{-30}$"), ("10⁻⁶", "$10^{-6}$"), ("10⁻³", "$10^{-3}$"), ("10⁻⁴", "$10^{-4}$"), ("10⁻⁷", "$10^{-7}$"),
+    ("10⁻¹¹", "$10^{-11}$"), ("10⁻¹⁰", "$10^{-10}$"), ("10⁻³⁰", "$10^{-30}$"), ("10⁻⁶", "$10^{-6}$"), ("10⁻³", "$10^{-3}$"), ("10⁻⁴", "$10^{-4}$"), ("10⁻⁷", "$10^{-7}$"),
     ("χ²_red", "$\\chi^2_{\\rm red}$"), ("Δχ²", "$\\Delta\\chi^2$"), ("ΔG", "$\\Delta G$"), ("χ²/ν", "$\\chi^2/\\nu$"), ("χ²", "$\\chi^2$"),
     ("Δ per 2.14 min", "$\Delta$ per 2.14 min"), ("Δ(dP/dt)", "$\Delta(\mathrm{d}P/\mathrm{d}t)$"), ("Δ(−2 ln L)", "$\Delta(-2\ln L)$"), ("√(χ²/ν)", "$\sqrt{\chi^2/\nu}$"), ("γ", "$\gamma$"),
     ("Σε₃", "$\\Sigma\\varepsilon_3$"), ("Σε", "$\\Sigma\\varepsilon$"), ("ε₃", "$\\varepsilon_3$"), ("ε", "$\\varepsilon$"),
+    ("δ", "$\\delta$"),   # rodada dezessete: o deslocamento anticorrelado da 5.3.1
     ("|dP/dt|/σ", "$|\\mathrm{d}P/\\mathrm{d}t|/\\sigma$"), ("|dP/dt|", "$|\\mathrm{d}P/\\mathrm{d}t|$"),
     ("σ(dP/dt)", "$\\sigma(\\mathrm{d}P/\\mathrm{d}t)$"), ("dP/dt", "$\\mathrm{d}P/\\mathrm{d}t$"),
     ("σ_P × N", "$\\sigma_P \\times N$"), ("P₃", "$P_3$"), ("M₃", "$M_3$"), ("M_bin", "$M_{\\rm bin}$"), ("M☉", "$M_\\odot$"),
@@ -235,11 +235,13 @@ def corpo_tabela3(md):
     cab = linhas[0]
     assert cab[:14] == ["TIC", "Name", "RA, Dec (J2000, deg)", "Tmag", "P (d)", "N (TESS+SW)", "d.o.f.", "span (yr)", "quadratic coefficient as dP/dt (s yr⁻¹)",
                         "χ²_red", "p_gof", "p_curv", "p_adv", "class"], cab[:14]
+    assert cab[14] == "archival offset that defeats it (min)", cab[14]
     t3 = []
     for c in linhas[1:]:
         ra, dec = c[2].split(", ")
+        bloco = inline(c[14]).replace("> 10", "$>$ 10")      # coluna nova (rodada treze, C2)
         t3.append(" & ".join([c[0], nome_tex(c[1]), ra, dec, c[3], c[4], c[5], c[6], c[7], c[8].replace("±", "$\\pm$"), c[9],
-                              p_tex(c[10]), p_tex(c[11]), p_tex(c[12]), codigo_classe(c[13])]) + "\\\\")
+                              p_tex(c[10]), p_tex(c[11]), p_tex(c[12]), codigo_classe(c[13]), bloco]) + "\\\\")
     assert len(t3) == 26, len(t3)
     return "\n".join(t3) + "\n"
 
@@ -253,7 +255,23 @@ def tabela6(md):
     cabtex = " & ".join(inline(c) for c in cab) + "\\\\\n"
     leg = legenda_tabela(md, "Table 5.")
     return ("\\begin{table*}\n\\caption{" + leg + "}\n\\label{t:janela}\n\\centering\n\\scriptsize\n"
-            "\\begin{tabular}{r l r r r l r r}\n\\hline\\hline\n" + cabtex + "\\hline\n" + corpo + "\\hline\n\\end{tabular}\n\\end{table*}\n")
+            # 9 colunas desde a rodada catorze: o GP agrupado ganhou coluna propria, rotulada
+            "\\begin{tabular}{r l r r r l r r r}\n\\hline\\hline\n" + cabtex + "\\hline\n" + corpo + "\\hline\n\\end{tabular}\n\\end{table*}\n")
+
+
+def tabela7(md):
+    """Tabela 6 (Apendice E): a varredura do bloco comum arquival, 26 linhas geradas por
+    tabela_nota.md_tabela7. Colunas: TIC, deteccao, classe, dez blocos, e o bloco que derrota."""
+    linhas = linhas_md(md, "tabela7")
+    cab = linhas[0]
+    assert cab[0] == "TIC" and cab[-1].startswith("offset that defeats"), cab
+    corpo = "\n".join(" & ".join(inline(c) for c in l) + "\\\\" for l in linhas[1:]) + "\n"
+    cabtex = " & ".join(inline(c) for c in cab) + "\\\\\n"
+    leg = legenda_tabela(md, "Table 6.")
+    return ("\\begin{table*}\n\\caption{" + leg + "}\n\\label{t:varredura}\n\\centering\n\\scriptsize\n"
+            # sem a coluna "detection" desde a poda da rodada quinze: TIC, classe e os blocos
+            "\\begin{tabular}{r l " + "r " * (len(cab) - 3) + "r}\n\\hline\\hline\n"
+            + cabtex + "\\hline\n" + corpo + "\\hline\n\\end{tabular}\n\\end{table*}\n")
 
 
 def legenda_tabela(md, prefixo):
@@ -290,6 +308,19 @@ def conferir_figuras():
 
 
 def main():
+    # rodada catorze: nenhum TeX sai enquanto o corpo citar uma entrada das Tabelas 3 ou 4 numa
+    # versao anterior da cadeia (Apendice D, item 20)
+    import citacoes_tabelas as CT
+    velhas = CT.confere(MD.read_text(encoding="utf-8"))
+    assert not velhas, ("citacoes do corpo em estado anterior da cadeia: "
+                        + "; ".join(f"TIC {d['tic']} {d['grandeza']} escrito {d['escrito']}, tabela {d['correto']}" for d in velhas))
+    # rodada dezessete: nem TeX enquanto um bloco gerado tiver sido editado dentro da nota (a
+    # proxima regeneracao desfaz a edicao), nem enquanto o texto citar um apendice que nao existe
+    import confere_nota as CN
+    fora = CN.blocos_gerados_divergentes(MD.read_text(encoding="utf-8"))
+    assert not fora, f"blocos gerados editados na nota: {fora} - corrija em src/tabela_nota.py e rode com --inserir"
+    _letras, mortas = CN.apendices_sem_titulo(MD.read_text(encoding="utf-8"))
+    assert not mortas, f"o texto cita apendices que nao existem: {mortas}"
     conferir_figuras()
     md = MD.read_text(encoding="utf-8")
     v1 = TEX_V1.read_text(encoding="utf-8")
@@ -340,6 +371,13 @@ def main():
         "No entry of this table is a period-change rate: each is a quadratic coefficient over 16--20\\,yr, and Sect.~\\ref{s:val} shows what such a "
         "coefficient can be made of; the table is not to be cited as measured d$P$/d$t$ (Sect.~\\ref{s:claim}). "
         "V527 Dra (TIC 424461577) passes all three tests and has a published cyclic O$-$C (Sect.~\\ref{ss:orb}).")
+    # coluna nova da Tabela 3 (rodada treze, C2): o menor offset comum das epocas arquivais que
+    # derrota a deteccao. O cabecalho e a especificacao da tabular vem VERBATIM do v1 e sao
+    # estendidos aqui, com asercao, para nao existir linha com mais celulas do que colunas
+    for a, b in (("\\begin{tabular}{l l r r r r c c r r r r r r c}", "\\begin{tabular}{l l r r r r c c r r r r r r c r}"),
+                 ("$p_{\\rm curv}$ & $p_{\\rm adv}$ & cl.\\\\", "$p_{\\rm curv}$ & $p_{\\rm adv}$ & cl. & blk\\\\")):
+        assert tabelas["t:coef"].count(a) == 1, a
+        tabelas["t:coef"] = tabelas["t:coef"].replace(a, b)
     chave = "d$P$/d$t$ in s\\,yr$^{-1}$."
     assert tabelas["t:coef"].count(chave) == 1, chave
     tabelas["t:coef"] = tabelas["t:coef"].replace(chave, "d$P$/d$t$ the quadratic coefficient expressed as a rate, in s\\,yr$^{-1}$.")
@@ -350,6 +388,7 @@ def main():
     # Tabela 5: gerada inteira aqui (so o teto TESS; a coluna SuperWASP x1,65 saiu em 2026-09-13 - Sect. 5.2.3)
     corpo3 = corpo_tabela3(md)
     tabelas["t:janela"] = tabela6(md)
+    tabelas["t:varredura"] = tabela7(md)          # Tabela 6, no Apendice E (rodada treze, C2)
     tabelas["t:coef"] = trocar_corpo(tabelas["t:coef"], corpo3)
     tabelas["t:dist"] = tabela4(md, tabelas["t:dist"][:tabelas["t:dist"].index("\\centering")])
 
@@ -408,9 +447,11 @@ def main():
                 # a Tabela 4 (distribuicao) e depois a Tabela 5 (as tres inflacoes, colunas que no
                 # markdown estao na Tabela 3): numeracao 3, 4, 5 como no TeX anterior
                 flush(); saida.append(tabelas["t:dist"] + "\n"); em_tabela = True; continue
+            if ln.startswith("<!-- tabela7:inicio"):
+                flush(); saida.append(tabelas["t:varredura"] + chr(10)); em_tabela = True; continue
             if ln.startswith("<!-- tabela6:inicio"):
                 flush(); saida.append(tabelas["t:janela"] + chr(10)); em_tabela = True; continue
-            if ln.startswith("<!-- tabela3:fim") or ln.startswith("<!-- tabela4:fim") or ln.startswith("<!-- tabela6:fim"):
+            if ln.startswith("<!-- tabela3:fim") or ln.startswith("<!-- tabela4:fim") or ln.startswith("<!-- tabela6:fim") or ln.startswith("<!-- tabela7:fim"):
                 em_tabela = False; continue
             if em_tabela == "md":                                # tabela markdown: pula as linhas "|" (e as vazias, e os marcadores) e sai na primeira que nao e
                 if ln.startswith("|") or not ln.strip() or ln.startswith("<!-- tabela2:"):
@@ -422,7 +463,7 @@ def main():
                 flush(); saida.append(tabelas["t:funil"] + "\n"); em_tabela = "md"; continue
             if ln.startswith("**Table 2. "):
                 flush(); saida.append(tabela2_tex(tabelas["t:naomedidos"], md) + "\n"); em_tabela = "md"; continue
-            if ln.startswith("**Table 3. ") or ln.startswith("**Table 4. ") or ln.startswith("**Table 5. "):
+            if ln.startswith("**Table 3. ") or ln.startswith("**Table 4. ") or ln.startswith("**Table 5. ") or ln.startswith("**Table 6. "):
                 continue                                          # as captions ja estao nos blocos verbatim
             if ln.startswith("    chain bias ="):
                 # a equacao vem do MARKDOWN: ate a rodada nove ela estava fixa aqui com o valor do
@@ -494,7 +535,10 @@ def main():
     saida.append("\n\\begin{acknowledgements}\n" + inline(agradecimentos) + "\n\\end{acknowledgements}\n\n" + bib + "\n\n\\end{document}\n")
 
     titulo_md = md.split("\n", 1)[0].lstrip("# ").strip()
-    t1, t2 = titulo_md.split(": ", 1)
+    # titulo e subtitulo: o separador passou a ser o travessao na rodada quinze; o dois-pontos
+    # continua aceito para nao quebrar versoes anteriores da nota
+    sep = " — " if " — " in titulo_md else ": "
+    t1, t2 = titulo_md.split(sep, 1)
     preambulo += "\\hypersetup{pdftitle={" + t1 + ": " + t2[0].upper() + t2[1:] + "}}\n"      # metadados do PDF (a listagem do arXiv le daqui)
     doc = (cabecalho + preambulo + "\\begin{document}\n\n"
            + f"\\title{{{inline(t1)}}}\n\\subtitle{{{inline(t2[0].upper() + t2[1:])}}}\n\n" + autor + "\n\n" + abstract + "\n" + keywords + "\n\n\\maketitle\n"

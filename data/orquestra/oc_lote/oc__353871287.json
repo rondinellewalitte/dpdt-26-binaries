@@ -3,5 +3,5 @@
  "status": "falha",
  "erro": "FALHA [superwasp]: 1SWASP J180520.93+550619.3 ficou com 77 pontos validos de 77",
  "traceback": "  res = medir_alvo_lote(tic, ep_df, float(r.period_d), r.sourceid,\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Rondinelle\\PROJETOS\\nasa_discover\\src\\oc_lote.py\", line 301, in medir_alvo_lote\n    t, f, sig_mad = sw.carregar(sourceid, ra, dec)\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\Rondinelle\\PROJETOS\\nasa_discover\\src\\superwasp.py\", line 120, in carregar\n    raise RuntimeError(\"FALHA [superwasp]: %s ficou com %d pontos validos de \"\nRuntimeError: FALHA [superwasp]: 1SWASP J180520.93+550619.3 ficou com 77 pontos validos de 77\n",
- "segundos": 57.17925572395325
+ "segundos": 55.82352042198181
 }

@@ -323,11 +323,16 @@ def medir_alvo_lote(tic, ep_df, P0, sourceid, ra, dec, t14_h):
     disp_sw = float(subs[0]["dispersao_entre_blocos_min"]) if np.isfinite(sig_sub) else 0.0
     assert all(abs(sb["dispersao_entre_blocos_min"] - disp_sw) < 1e-9 for sb in subs) if np.isfinite(sig_sub) else True
     assert abs(disp_sw - float(sig_sub) * np.sqrt(len(subs))) < 1e-6 if np.isfinite(sig_sub) else True, (disp_sw, sig_sub, len(subs))
+    # estado F: alem do vies comum da cadeia, a correcao de forma DO PROPRIO ALVO, e o piso da
+    # barra arquival com a incerteza dessa correcao dentro (cadeia_oc.vies_forma; alvo sem medida
+    # devolve (0, VIES_CADEIA_SIG) e fica exatamente como no estado E)
+    vies_f, piso_f = co.vies_forma(tic)
     for sb in subs:
         pontos.append({"fonte": "SuperWASP %.0f" % sb["t_medio"],
-                       "t0": float(sb["t0"]) - 2457000.0 - co.VIES_CADEIA_MIN / 1440.0,
-                       "sig_min": float(np.hypot(max(sb["sigma_formal_min"], disp_sw), co.VIES_CADEIA_SIG)),
-                       "sig_formal_min": float(sb["sigma_formal_min"])})
+                       "t0": float(sb["t0"]) - 2457000.0 - co.VIES_CADEIA_MIN / 1440.0 - vies_f / 1440.0,
+                       "sig_min": float(np.hypot(max(sb["sigma_formal_min"], disp_sw), piso_f)),
+                       "sig_formal_min": float(sb["sigma_formal_min"]),
+                       "vies_forma_min": vies_f, "piso_arquival_min": piso_f})
     pt = pd.DataFrame(pontos).sort_values("t0").reset_index(drop=True)
     # A ESCADA NAO ATRAVESSA O VAO, E NAO DEVE. Ela resolve alias entre epocas
     # proximas exigindo residuo < 3 min numa efemeride LINEAR - e a 19 anos um

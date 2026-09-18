@@ -1,0 +1,13 @@
+{
+ "mediana_esperada": 0.7330364826099577,
+ "p2.5": 0.4346109632903882,
+ "p97.5": 1.1468169878094887,
+ "n_sim": 20000,
+ "mediana_observada": 0.7082315205111585,
+ "P_maior_ou_igual": 0.55565,
+ "agregado_26": 1.4399692920399496,
+ "dof_26": 67,
+ "agregado_adequados": 0.697223671709057,
+ "n_adequados": 23,
+ "fator_barra_implicado": 0.982935071060116
+}

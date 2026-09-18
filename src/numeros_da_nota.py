@@ -108,6 +108,52 @@ def numeros():
     put("2", "ffi_qlp_dt_max_min", float(np.max(np.abs(pq("ffi_fora_amostra_d9_controle.parquet").query("provenance == 'QLP'").dt_ffi_menos_2min_min))),
         "ffi_fora_amostra_d9_controle.parquet")
     # --- 3.4 vies
+    # --- 4: as contagens da observacao (iv), que mudaram com o estado F
+    put("4", "n_p_curv_abaixo_005", int((t26.p < 0.05).sum()), "tabela_26.parquet")
+    put("4", "caem_no_adversarial", sorted(int(x) for x in t26.TIC[(t26.p < 0.05) & ~t26.curvatura]), "tabela_26.parquet")
+    # --- 5.2.1: os agregados que a nota cita e que ate a rodada catorze nao eram registrados
+    cal = jl("calibracao_chi2r.json")
+    ngl = pq("nulo_global_26.parquet").iloc[0]
+    put("5.2.1", "mediana_chi2r_26", float(cal["mediana_observada"]), "calibracao_chi2r.json (reinflar_tess_26)")
+    put("5.2.1", "P_mediana_esperada", float(cal["P_maior_ou_igual"]), "calibracao_chi2r.json")
+    put("5.2.1", "agregado_adequados", float(cal["agregado_adequados"]), "calibracao_chi2r.json")
+    put("5.2.1", "nulo_mediana", {"mediana": float(ngl.mediana_chi2r_nulo), "pct": float(ngl.pct_mediana)}, "nulo_global_26.parquet")
+    put("5.2.1", "nulo_agregado", {"mediana": float(ngl.agregado_nulo), "medido": float(ngl.agregado_medido),
+                                   "pct": float(ngl.pct_agregado)}, "nulo_global_26.parquet")
+    # --- 3.4 estado F: a correcao de forma por alvo, e o que ela moveu (rodada treze)
+    vforma = json.loads((config.DATA / "orquestra" / "vies_forma_por_alvo.json").read_text(encoding="utf-8"))["alvos"]
+    prevF = pd.DataFrame(json.loads((config.DATA / "orquestra" / "previsao_estado_F.json").read_text(encoding="utf-8"))["alvos"]).set_index("tic")
+    varre = pq("vies_forma_propagado_varredura.parquet").set_index("tic")
+    consF = json.loads((BASE / "vies_forma_propagado_26.json").read_text(encoding="utf-8"))
+    d11 = sorted(int(x) for x in t26.TIC[t26.curvatura])   # t26 aqui nao esta indexado por TIC
+    vabs = {int(k): abs(float(v["vies_min"])) for k, v in vforma.items()}
+    put("3.4", "forma_max_D11", max(vabs[t] for t in d11), "vies_forma_por_alvo.json nos 11 do D11")
+    put("3.4", "forma_max_amostra", max(vabs.values()), "vies_forma_por_alvo.json")
+    put("3.4", "forma_tic_max", int(max(vabs, key=vabs.get)), "vies_forma_por_alvo.json")
+    put("3.4", "forma_desloc_mediano", float(prevF[prevF.tem_forma].desloc_sigma.median()), "previsao_estado_F.json")
+    put("3.4", "forma_desloc_max", float(prevF[prevF.tem_forma].desloc_sigma.max()), "previsao_estado_F.json")
+    put("3.4", "forma_instaveis", sorted(int(k) for k, v in vforma.items() if v["instavel"]), "vies_forma_por_alvo.json")
+    sobc = pq("sobreposicao_corrigida_26.parquet")
+    sobc = sobc[(sobc.tic == 229687624) & (sobc.variante == "cadeia")].sort_values("fonte")
+    put("3.4", "cvdra_dif_corrigida", [[float(r.dif_min), float(np.hypot(r.sig_nosso_min, r.sig_brno_min))] for r in sobc.itertuples()],
+        "sobreposicao_corrigida_26.parquet (variante da cadeia)")
+    # --- 5.3.2 e 5.5: o corte conservador e a varredura do bloco comum
+    # completude e supressao no proprio coeficiente, por alvo do D11 (rodada treze: nao eram
+    # registradas, e por isso a re-simulacao do estado F nao aparecia como divergencia)
+    cse = pq("completude_secular_26_alvo.parquet").set_index("tic")
+    gD11 = cse.loc[[t for t in d11 if t in cse.index]]
+    put("5.2.5", "completude_D11", {"min": float(gD11.completude_no_proprio.min()), "max": float(gD11.completude_no_proprio.max()),
+                                    "mediana": float(gD11.completude_no_proprio.median())}, "completude_secular_26_alvo.parquet")
+    put("5.2.5", "supressao_D11", {"min": float(gD11.supressao_no_proprio.min()), "max": float(gD11.supressao_no_proprio.max()),
+                                   "mediana": float(gD11.supressao_no_proprio.median())}, "completude_secular_26_alvo.parquet")
+    put("5.2.5", "completude_0.02_ge_meio", int((cse["completude_0.02"] >= 0.5).sum()), "completude_secular_26_alvo.parquet")
+    put("5.3.2", "conservadora_sobrevivem", len(consF["D11_sobrevive"]["conservadora"]), "vies_forma_propagado_26.json")
+    put("5.3.2", "conservadora_quais", sorted(consF["D11_sobrevive"]["conservadora"]), "vies_forma_propagado_26.json")
+    put("5.5", "bloco_minimo", {str(t): (None if varre.loc[t, "bloco_min_para_perder_deteccao"] is None
+                                         else float(varre.loc[t, "bloco_min_para_perder_deteccao"])) for t in d11},
+        "vies_forma_propagado_varredura.parquet")
+    put("5.5", "z_bloco_3min", {str(t): float(varre.loc[t, "z_por_bloco"]["3.0"]) for t in varre.index
+                                if varre.loc[t, "no_teste_de_janela"]}, "vies_forma_propagado_varredura.parquet")
     put("3.4", "vies_cadeia_min", co.VIES_CADEIA_MIN, "src/cadeia_oc.py VIES_CADEIA_MIN (estado E)")
     put("3.4", "vies_cadeia_sig", co.VIES_CADEIA_SIG, "src/cadeia_oc.py VIES_CADEIA_SIG")
     for k, v in hj["conjuntos"].items():
@@ -202,6 +248,127 @@ def numeros():
     # que o docstring dele continue trazendo a previsao por classe declarada antes de rodar
     doc_j = (config.ROOT / "src" / "ffi_fora_amostra_d9.py").read_text(encoding="utf-8")
     assert "PREVISAO POR CLASSE" in doc_j, "ffi_fora_amostra_d9.py nao traz mais a previsao por classe no docstring"
+    # ---- rodada dezessete: bloco B virado em limite, barras formais nos 26, GP agrupado, deflacao
+    md = pq("media_diferenca_oc_d9.parquet").set_index("tic")
+    # O conjunto que a 5.3.1 discute. Ate a rodada dezessete ele so existia digitado num patch, e
+    # a frase que o apresentava ("the eight the window test classifies") descrevia outro conjunto.
+    # Fica aqui, explicito, ate o humano decidir entre mante-lo e adotar a regra do D11 abaixo.
+    OITO_DO_TEXTO = [198408416, 229914020, 230386284, 232634196, 329246824, 377253090, 390021728, 392536812]
+    t8 = md.loc[OITO_DO_TEXTO]
+    # A variante por regra: deteccoes (D11) com bloco completo nos dois minimos, sem a calibracao.
+    # Difere do de cima por 198388252, deteccao sinalizada com os mesmos 39 setores de 229914020.
+    _d11b = [t for t in sorted(int(x) for x in t26.TIC[t26.curvatura]) if t in md.index and t != 424461577]
+    put("5.3.1", "anticorrelada_limite_D11",
+        {"n": len(_d11b), "alvos": _d11b,
+         "n_abaixo_do_vagar": sum(1 for t in _d11b if md.loc[t, "delta_pico_a_pico_95_min"] < md.loc[t, "amp_P_min"]),
+         "n_r_positivo": sum(1 for t in _d11b if md.loc[t, "r_setor"] > 0),
+         "n_anticorrelado_p05": sum(1 for t in _d11b if md.loc[t, "r_setor"] < 0 and md.loc[t, "p_r_setor"] < 0.05),
+         "acrescentado": {"tic": 198388252, "r_setor": float(md.loc[198388252, "r_setor"]),
+                          "limite_min": float(md.loc[198388252, "delta_pico_a_pico_95_min"]),
+                          "vagar_min": float(md.loc[198388252, "amp_P_min"])}},
+        "media_diferenca_oc_d9.parquet restrito ao D11 (variante por regra, nao adotada no texto)")
+    abaixo = sorted(int(t) for t in t8.index if t8.loc[t, "delta_pico_a_pico_95_min"] < t8.loc[t, "amp_P_min"])
+    # A fracao do vagar que o limite ocupa e o que diz o quanto ele exclui; a desigualdade sozinha
+    # nao diz. E o vagar tem de ser o que um termo suave NAO explica (rodada dezenove): contra a
+    # efemeride linear do bloco a excursao carrega a parabola do proprio bloco dentro de si.
+    _fr = {int(t): 100.0 * float(t8.loc[t, "delta_pico_a_pico_95_min"]) / float(t8.loc[t, "amp_P_quad_min"])
+           for t in t8.index}
+    abaixo = sorted(t for t in _fr if _fr[t] < 100.0)
+    put("5.3.1", "anticorrelada_limite",
+        {"min": float(t8.delta_pico_a_pico_95_min.min()), "max": float(t8.delta_pico_a_pico_95_min.max()),
+         "n": int(len(t8)), "n_abaixo_do_vagar": len(abaixo), "abaixo": abaixo,
+         "fracao_min_pct": min(_fr.values()), "fracao_max_pct": max(_fr.values()),
+         "abaixo_da_metade": sorted(t for t in _fr if _fr[t] < 50.0),
+         "fracao_pct": {str(t): _fr[t] for t in _fr},
+         "vagar_quad_min": {str(int(t)): float(t8.loc[t, "amp_P_quad_min"]) for t in t8.index},
+         "vagar_quad_faixa": [float(t8.amp_P_quad_min.min()), float(t8.amp_P_quad_min.max())],
+         "limite_faixa": [float(t8.delta_pico_a_pico_95_min.min()), float(t8.delta_pico_a_pico_95_min.max())],
+         "queda_com_deriva_pct": {str(int(t)): 100.0 * (1 - float(t8.loc[t, "sigma_extra_D_95_com_deriva_min"])
+                                                        / float(t8.loc[t, "sigma_extra_D_95_min"]))
+                                  for t in t8.index if bool(t8.loc[t, "deriva_d_significativa"])},
+         "por_alvo": {str(int(t)): [float(t8.loc[t, "delta_pico_a_pico_95_min"]), float(t8.loc[t, "amp_P_min"])]
+                      for t in t8.index}},
+        "media_diferenca_oc_d9.parquet: excesso branco de D, limite de perfil a 95%")
+    put("5.3.1", "anticorrelada_V527",
+        {"limite_pico_a_pico_min": float(md.loc[424461577, "delta_pico_a_pico_95_min"]),
+         "vagar_min": float(md.loc[424461577, "amp_P_min"]),
+         "vagar_quad_min": float(md.loc[424461577, "amp_P_quad_min"]),
+         "fracao_pct": 100.0 * float(md.loc[424461577, "delta_pico_a_pico_95_min"]) / float(md.loc[424461577, "amp_P_quad_min"])},
+        "media_diferenca_oc_d9.parquet: alvo de calibracao")
+
+    # A passada com barras formais. O resumo cita DOIS numeros dela e o parecer os leu como se
+    # fossem de passadas diferentes: os 31 sao quem chega a um ajuste com barras formais, os 26
+    # sao os deste artigo - a mesma passada, dois recortes. Lidos do resumo versionado, nao dos
+    # JSON por alvo (que ficam fora do repositorio).
+    _bf = pq("../oc_lote_barras_formais/resumo_oc_lote.parquet")
+    _bf = _bf[_bf.status == "ok"].set_index("tic")
+    _n26 = [t for t in t26.TIC if t in _bf.index]
+
+    def _conta(ix):
+        s_ = _bf.loc[ix]
+        return {"n": len(ix), "significativos": int(((s_.dPdt_s_por_ano.abs() / s_.sdPdt_s_por_ano) > 3).sum()),
+                "sobrevivem_adversarial": int(((s_.p_curvatura < 0.05) & (s_.p_adversarial < 0.05)).sum())}
+
+    put("5.1", "barras_formais_nos_26", _conta(_n26),
+        "oc_lote_barras_formais/resumo_oc_lote.parquet restrito aos 26 da Tabela 3")
+    put("5.1", "barras_formais_todos", _conta(list(_bf.index)),
+        "oc_lote_barras_formais/resumo_oc_lote.parquet: todos os que chegam a um ajuste")
+
+    # o GP agrupado como classificador: quantos contradiria (nao e sensibilidade; e comparacao)
+    _r = rec.set_index("tic")
+    _cl = [t for t in _r.index if t != 424461577]
+    put("5.3.2", "GP_agrupado_classes",
+        {"n": len(_cl), "contraditados": sum(1 for t in _cl if abs(float(_r.loc[t, "GP_agrupado_z"])) > 3)},
+        "reconcilia_hi_d9.parquet: coluna GP_agrupado_z")
+
+    # deflacao das barras do desenho de 230386284 (a barra do BLOCO domina a soma em quadratura)
+    _t = 230386284
+    _mod = list(rad9[rad9.nivel == 0.95].set_index("tic").loc[_t, "admitidos"])[0]
+    _d7, _s7 = float(_r.loc[_t, "dPdt_7"]), float(_r.loc[_t, "s_7"])
+    _db, _sb = float(_r.loc[_t, _mod + "_dPdt"]), float(_r.loc[_t, _mod + "_s"])
+    _den = {k: float(np.hypot(_sb, _s7 / k)) for k in (1, 2, 3)}
+    put("5.5", "deflacao_230386284",
+        {"z": {str(k): (_db - _d7) / _den[k] for k in (1, 2, 3)}, "s_bloco": _sb, "s_desenho": _s7,
+         "queda_denominador_pct": 100 * (1 - _den[3] / _den[1])},
+        "reconcilia_hi_d9.parquet: desenho e bloco do modelo admitido")
+
+    # rodada dezenove: a sobreposicao de CV Dra, que a 3.4 e a 5.5 escreviam com valores
+    # diferentes (a 5.5 ficou na variante SEM correcao de forma, do estado E)
+    _sob = pq("sobreposicao_corrigida_26.parquet")
+    _cv = _sob[(_sob.tic == 229687624) & (_sob.variante == "cadeia")].sort_values("fonte")
+    put("3.4", "sobreposicao_CVDra",
+        {"dif_min": [float(x) for x in _cv.dif_min], "sig_min": [float(np.hypot(a, b)) for a, b in
+                                                                 zip(_cv.sig_nosso_min, _cv.sig_brno_min)]},
+        "sobreposicao_corrigida_26.parquet (variante da cadeia)")
+
+    # rodada vinte: o estimador alternativo (largura do perfil livre) contra o da cadeia
+    _alt = pq("estimador_alt_d11.parquet")
+    _altg = pq("estimador_alt_d11_global.parquet").set_index("tic")
+    _altok = _alt[_alt.dt_min.notna() & ~_alt.na_borda]
+    put("3.4", "estimador_alt",
+        {"n_alvos": int(len(_altg)), "n_temporadas": int(len(_alt)), "n_borda": int(_alt.na_borda.sum()),
+         "razao_t14_mediana": float(_altg.razao.median()), "razao_t14_max": float(_altg.razao.max()),
+         "n_mais_estreito": int((_altg.razao < 1).sum()),
+         "dt_temporada_mediana": float(_altok.dt_min.abs().median()),
+         "dt_temporada_p90": float(_altok.dt_min.abs().quantile(0.9)),
+         "dt_temporada_max": float(_altok.dt_min.abs().max()),
+         "dt_global_mediana": float(_altg.dt_global_min.abs().median()),
+         "dt_global_max": float(_altg.dt_global_min.abs().max()),
+         "dt_global_232634196": float(_altg.loc[232634196, "dt_global_min"])},
+        "estimador_alt_d11.parquet e estimador_alt_d11_global.parquet")
+    # o reajuste no espaco de epocas que a cadeia usa (uma por temporada), que substituiu a
+    # comparacao por proxy contra a coluna de offset minimo
+    _ref = pq("estimador_alt_refit.parquet").set_index("tic")
+    put("3.4", "estimador_alt_refit",
+        {"n": int(len(_ref)), "sobrevivem": int(_ref.sobrevive_alt.sum()),
+         "sobrevivem_cadeia": int(_ref.sobrevive_cadeia.sum()),
+         "desloc_sigma_mediana": float(_ref.desloc_sigma.median()),
+         "desloc_sigma_max": float(_ref.desloc_sigma.max()),
+         "pior_alvo": int(_ref.desloc_sigma.idxmax()),
+         "pior_temporada_min": float(_alt[_alt.tic == int(_ref.desloc_sigma.idxmax())].dt_min.abs().max()),
+         "cobertura_parcial": sorted(int(t) for t in _ref.index[_ref.cobertura_parcial])},
+        "estimador_alt_refit.parquet")
+
     put("5.5", "J_previsao_script", "ffi_fora_amostra_d9", "src/ffi_fora_amostra_d9.py: docstring com PREVISAO POR CLASSE")
     return F
 

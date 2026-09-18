@@ -49,12 +49,18 @@ S_POR_ANO = 86400.0 * 365.25
 P_DET = 0.05
 
 
-def covariancia(sig_min, tess, correlacionado=True):
-    """C em dias^2: diagonal com as barras atribuidas; no bloco SuperWASP, o 0,78 sai da diagonal e entra como bloco comum."""
+def covariancia(sig_min, tess, correlacionado=True, piso_min=None):
+    """C em dias^2: diagonal com as barras atribuidas; no bloco SuperWASP, o PISO da barra
+    arquival sai da diagonal e entra como bloco comum.
+
+    Ate o estado E o piso era so a incerteza do vies da cadeia (0,75 min). No estado F ele e
+    hypot(0,75; sigma da media do vies de forma daquele alvo) - e as DUAS partes sao de modo
+    comum (uma e a calibracao da cadeia, a outra e um numero unico por alvo), entao o piso inteiro
+    vai para o bloco. `piso_min=None` mantem o comportamento antigo, para quem chama sem alvo."""
     sig = np.asarray(sig_min, float) / 1440.0
     C = np.diag(sig ** 2)
     if correlacionado:
-        v = co.VIES_CADEIA_SIG / 1440.0
+        v = float(co.VIES_CADEIA_SIG if piso_min is None else piso_min) / 1440.0
         isw = np.where(~tess)[0]
         for i in isw:
             C[i, i] = max(sig[i] ** 2 - v ** 2, 1e-12)      # sigma interna
@@ -90,11 +96,11 @@ def adversarial_gls(E, t0, C):
     return float(stats.chi2.sf(dchi(pior), 1))
 
 
-def refazer_gls(pontos, P, correlacionado=True):
+def refazer_gls(pontos, P, correlacionado=True, piso_min=None):
     E = pontos.E.values.astype(float)
     t = pontos.t0.values.astype(float)
     tess = pontos.fonte.str.startswith("TESS").values
-    C = covariancia(pontos.sig_min.values, tess, correlacionado)
+    C = covariancia(pontos.sig_min.values, tess, correlacionado, piso_min)
     _, _, chi2l, _ = ajustar_gls(E, t, C, 1)
     coef, _, chi2p, cov = ajustar_gls(E, t, C, 2)
     dof = len(E) - 3
@@ -112,7 +118,7 @@ if __name__ == "__main__":
         pontos = pd.DataFrame(j["pontos"]).sort_values("t0").reset_index(drop=True)
         P = float(j["P_escada_d"])
         diag = refazer_gls(pontos, P, correlacionado=False)
-        gls = refazer_gls(pontos, P, correlacionado=True)
+        gls = refazer_gls(pontos, P, correlacionado=True, piso_min=co.vies_forma(tic)[1])   # estado F: o piso do alvo
         det_B = bool(t26.loc[tic, "curvatura"])
         det_diag = diag["p_curv"] < P_DET and diag["p_adv"] < P_DET
         det_gls = gls["p_curv"] < P_DET and gls["p_adv"] < P_DET
