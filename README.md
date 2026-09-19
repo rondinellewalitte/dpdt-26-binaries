@@ -85,6 +85,7 @@ The scripts read the per-target records and the tables in `data/orquestra/oc_lot
 | `vies_forma_propagado_26.py` | 3.4, 5.3.2 | `vies_forma_propagado_26*` (the per-target shape correction propagated through the chain: state (F), and the scan over a common archival offset) |
 | `media_diferenca_oc_d9.py` | 5.3.1 | `media_diferenca_oc_d9*` (mean and difference of the primary and secondary minima over the complete block, and the 95% bound on the anticorrelated component) |
 | `estimador_alt_d11.py`, `estimador_alt_refit.py` | 3.4 | `estimador_alt_d11*`, `estimador_alt_refit` (a second timing template with the profile width free, and the eleven detections refitted with its epochs) |
+| `calibradores_expandido.py` | 3.4 | `calibradores_expandido*` (every transiting planet with a SuperWASP source re-examined against the full Ivshina & Winn and ExoClock III catalogues: the archival-bias calibration uses all six objects the archive allows) |
 
 The Monte Carlo scripts are seeded; rerunning them reproduces the stored tables up to the order of floating-point
 summation.
@@ -92,7 +93,7 @@ summation.
 Two scripts close the loop between the records and the manuscript. `numeros_da_nota.py` writes
 `reports/numeros_da_nota.json`: every quantity quoted in the paper, with the file it was read from.
 `confere_nota.py` reads the manuscript, extracts each of those quantities from the text and compares it with the
-registry (99 checks, every occurrence of each), and sweeps both the manuscript and the text drawn inside the
+registry (107 checks, every occurrence of each), and sweeps both the manuscript and the text drawn inside the
 figures for values of superseded states of the chain, which are allowed only in Appendices C and D. A third guard,
 `citacoes_tabelas.py`, reads every numeral of the body that cites an entry of Tables 3 or 4 from the parquet
 rather than from the text; `md_para_tex.py` refuses to write any TeX while any of the three disagrees.

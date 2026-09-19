@@ -54,8 +54,8 @@
 | χ²_red of quadratic fit, median (25th–75th) | 0.71 (0.53–1.13) | 0.68 (0.53–0.89) | 0.56 (0.45–0.80) |
 | \|dP/dt\|/σ > 2 / > 3 / > 5 | 18 / 13 / 11 | 16 / 11 / 9 | 14 / 9 / 8 |
 | Curvature with p < 0.05 | 18 | 16 | 14 |
-| Curvature surviving the adversarial test | 11 (42%, 95% CI 26%–61%) — 6 > 0, 5 < 0 | 9 (39%, 95% CI 22%–59%) — 4 > 0, 5 < 0 | 8 (50%, 95% CI 28%–72%) — 4 > 0, 4 < 0 |
-| Same, over targets with detection efficiency ε > 0 (Section 5.4) | 11 of 24 (46%, 95% CI 28%–65%) | 9 of 21 (43%, 95% CI 24%–63%) | — |
+| Curvature surviving the adversarial test | 11 of 26 — 6 > 0, 5 < 0 | 9 of 23 — 4 > 0, 5 < 0 | 8 of 16 — 4 > 0, 4 < 0 |
+| Same, over targets with detection efficiency ε > 0 (Section 5.4) | 11 of 24 | 9 of 21 | — |
 | Same, with TESS bars inflated by 1.0 / 2.6 min yr⁻¹ (Section 5.3, sensitivity ceiling) | 1 / 0 of 26 | 1 / 0 of 23 | 0 / 0 of 16 |
 | Measured but not tested (d.o.f. < 1) | 0 | 0 | 0 |
 | \|dP/dt\| > 10 s yr⁻¹ (cycle-count guard) | 0 | 0 | 0 |
@@ -122,7 +122,7 @@
 - Flagged without significant curvature: 237116051
 - Column 3 of Table 4 (adequate and sigma < 0.01): n=16, surviving 8: 144194304, 198408416, 230386284, 329246824, 377253090, 390021728, 392536812, 424461577
 - Sign test n=23: 10+/13- p=0.68; n=26: 12+/14- p=0.85
-- Surviving curvature: 9/23 = 39% (CI 22%–59%); 11/26 = 42% (CI 26%–61%)
-- Surviving curvature over targets with epsilon > 0: all 11 of 24 (46%, 95% CI 28%–65%) | adequate 9 of 21 (43%, 95% CI 24%–63%) | col3 8 of 16 (50%, 95% CI 28%–72%)
+- Surviving curvature: 9 of 23; 11 of 26
+- Surviving curvature over targets with epsilon > 0: all 11 of 24 | adequate 9 of 21 | col3 8 of 16
 - Median |dP/dt| by partition: all 0.0157 (n=26) | adequate 0.0174 (n=23) | sigma<0.01 0.0093 (n=16); 0.0157 s/yr = 1.82e-07 d/yr
 - Sign test sigma<0.01: 8+/8- p=1.00; surviving 8/16

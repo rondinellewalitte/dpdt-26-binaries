@@ -369,6 +369,14 @@ def numeros():
          "cobertura_parcial": sorted(int(t) for t in _ref.index[_ref.cobertura_parcial])},
         "estimador_alt_refit.parquet")
 
+    # rodada vinte: a amostra de calibradores do vies arquival, refeita em codigo e esgotada
+    _cx = json.loads((BASE / "calibradores_expandido.json").read_text(encoding="utf-8"))
+    put("3.4", "calibradores_expandido",
+        {"n_candidatos": _cx["n_candidatos"], "n_elegiveis": _cx["n_elegiveis"],
+         "n_rendem_epoca": _cx["n_rendem_epoca"], "n_passam": _cx["n_passam"],
+         "IW22": _cx["conjuntos"]["IW22"], "ExoClock3": _cx["conjuntos"]["ExoClock3"]},
+        "calibradores_expandido.json (35 candidatos com fonte SuperWASP; IW22 J/ApJS/259/62 e ExoClock III J/ApJS/265/4)")
+
     put("5.5", "J_previsao_script", "ffi_fora_amostra_d9", "src/ffi_fora_amostra_d9.py: docstring com PREVISAO POR CLASSE")
     return F
 

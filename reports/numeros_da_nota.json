@@ -739,6 +739,65 @@
     ]
    },
    "fonte": "estimador_alt_refit.parquet"
+  },
+  "calibradores_expandido": {
+   "valor": {
+    "n_candidatos": 35,
+    "n_elegiveis": 35,
+    "n_rendem_epoca": 15,
+    "n_passam": 6,
+    "IW22": {
+     "media_min": -1.6602543835360326,
+     "sigma_min": 0.7232860813008412,
+     "chi2": 5.758166221941207,
+     "dof": 5,
+     "chi2_dof": 1.1516332443882413,
+     "n": 6,
+     "sem_o_mais_preciso": {
+      "media_min": -1.081790552794013,
+      "sigma_min": 0.9724322296296024,
+      "chi2": 4.966130934475064,
+      "dof": 4,
+      "chi2_dof": 1.241532733618766,
+      "n": 5
+     },
+     "mais_preciso": "WASP-18 b",
+     "alvos": [
+      "WASP-17 b",
+      "WASP-18 b",
+      "WASP-19 b",
+      "WASP-4 b",
+      "WASP-6 b",
+      "WASP-98 b"
+     ]
+    },
+    "ExoClock3": {
+     "media_min": -1.6838008509978155,
+     "sigma_min": 0.7103559414311735,
+     "chi2": 2.5662607735935126,
+     "dof": 5,
+     "chi2_dof": 0.5132521547187026,
+     "n": 6,
+     "sem_o_mais_preciso": {
+      "media_min": -1.073998682076397,
+      "sigma_min": 0.9646090886654142,
+      "chi2": 1.6930766158207768,
+      "dof": 4,
+      "chi2_dof": 0.4232691539551942,
+      "n": 5
+     },
+     "mais_preciso": "WASP-18 b",
+     "alvos": [
+      "WASP-17 b",
+      "WASP-18 b",
+      "WASP-19 b",
+      "WASP-4 b",
+      "WASP-6 b",
+      "WASP-98 b"
+     ]
+    }
+   },
+   "fonte": "calibradores_expandido.json (35 candidatos com fonte SuperWASP; IW22 J/ApJS/259/62 e ExoClock III J/ApJS/265/4)"
   }
  },
  "5.2.5": {

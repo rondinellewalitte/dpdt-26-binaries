@@ -354,7 +354,7 @@ def md_tabela4(d):
             sens = sub[sub.TIC.map(e) > 0]
             k, n = int(sens.curvatura.sum()), len(sens)
             tx = Taxa.de(k, n)
-            c["surv_sens"] = f"{k} of {n} ({k / n:.0%}, 95% CI {tx.ic95[0]:.0%}–{tx.ic95[1]:.0%})"
+            c["surv_sens"] = f"{k} of {n}"
             c["n_sem_sens"] = len(sub) - n
     rf = BASE / "reinflar_tess_26.parquet"
     if rf.exists():
@@ -380,7 +380,7 @@ def md_tabela4(d):
         linha("\\|dP/dt\\|/σ > 2 / > 3 / > 5", lambda c: f"{c['z2']} / {c['z3']} / {c['z5']}"),
         linha("Curvature with p < 0.05", lambda c: str(c["p05"])),
         linha("Curvature surviving the adversarial test",
-              lambda c: f"{c['surv']} ({c['surv'] / c['n']:.0%}, 95% CI {c['surv_lo']:.0%}–{c['surv_hi']:.0%}) — {c['surv_pos']} > 0, {c['surv_neg']} < 0"),
+              lambda c: f"{c['surv']} of {c['n']} — {c['surv_pos']} > 0, {c['surv_neg']} < 0"),
         linha("Same, over targets with detection efficiency ε > 0 (Section 5.4)", lambda c: c.get("surv_sens", "—") if c.get("n_sem_sens", 0) else "—"),
         linha("Same, with TESS bars inflated by 1.0 / 2.6 min yr⁻¹ (Section 5.3, sensitivity ceiling)", lambda c: c.get("surv_reinf", "—")),
         linha("Measured but not tested (d.o.f. < 1)", lambda c: str(c["n_dof_lt1"])),
@@ -417,7 +417,7 @@ if __name__ == "__main__":
         f"Column 3 of Table 4 (adequate and sigma < {SIGMA_PRECISO}): n={c_prec['n']}, surviving {c_prec['surv']}: "
         + ", ".join(str(t) for t in d[(d.s < SIGMA_PRECISO) & ~d.inadequada & d.curvatura].TIC),
         f"Sign test n={a['n']}: {a['pos']}+/{a['neg']}- p={a['p_sinal']:.2f}; n=26: {b['pos']}+/{b['neg']}- p={b['p_sinal']:.2f}",
-        f"Surviving curvature: {a['surv']}/{a['n']} = {a['surv'] / a['n']:.0%} (CI {a['surv_lo']:.0%}–{a['surv_hi']:.0%}); {b['surv']}/26 = {b['surv'] / 26:.0%} (CI {b['surv_lo']:.0%}–{b['surv_hi']:.0%})",
+        f"Surviving curvature: {a['surv']} of {a['n']}; {b['surv']} of 26",
         f"Surviving curvature over targets with epsilon > 0: all {b.get('surv_sens', '-')} | adequate {a.get('surv_sens', '-')} | col3 {c_prec.get('surv_sens', '-')}",
         f"Median |dP/dt| by partition: all {b['abs_med']:.4f} (n=26) | adequate {a['abs_med']:.4f} (n={a['n']}) | sigma<{SIGMA_PRECISO} {c_prec['abs_med']:.4f} (n={c_prec['n']}); "
         f"{b['abs_med']:.4f} s/yr = {b['abs_med'] / 86400:.2e} d/yr",
