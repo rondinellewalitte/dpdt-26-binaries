@@ -762,6 +762,60 @@
       "n": 5
      },
      "mais_preciso": "WASP-18 b",
+     "drop_one": {
+      "WASP-18 b": {
+       "media_min": -1.081790552794013,
+       "sigma_min": 0.9724322296296024,
+       "chi2": 4.966130934475064,
+       "dof": 4,
+       "chi2_dof": 1.241532733618766,
+       "n": 5
+      },
+      "WASP-4 b": {
+       "media_min": -1.7866984800743821,
+       "sigma_min": 0.8350393976878031,
+       "chi2": 5.666358645335553,
+       "dof": 4,
+       "chi2_dof": 1.4165896613338882,
+       "n": 5
+      },
+      "WASP-19 b": {
+       "media_min": -1.839698323914003,
+       "sigma_min": 0.7533131936110017,
+       "chi2": 5.031924198595506,
+       "dof": 4,
+       "chi2_dof": 1.2579810496488766,
+       "n": 5
+      },
+      "WASP-6 b": {
+       "media_min": -2.0309983319805576,
+       "sigma_min": 0.7856682133815666,
+       "chi2": 4.297967908686894,
+       "dof": 4,
+       "chi2_dof": 1.0744919771717234,
+       "n": 5
+      },
+      "WASP-17 b": {
+       "media_min": -1.4411032060537354,
+       "sigma_min": 0.733090439202098,
+       "chi2": 2.394640202099945,
+       "dof": 4,
+       "chi2_dof": 0.5986600505249863,
+       "n": 5
+      },
+      "WASP-98 b": {
+       "media_min": -1.6171111928415993,
+       "sigma_min": 0.7406267665301199,
+       "chi2": 5.684842746136274,
+       "dof": 4,
+       "chi2_dof": 1.4212106865340686,
+       "n": 5
+      }
+     },
+     "drop_one_min": -2.0309983319805576,
+     "drop_one_max": -1.081790552794013,
+     "drop_one_mesmo_sinal": true,
+     "drop_one_pior": "WASP-18 b",
      "alvos": [
       "WASP-17 b",
       "WASP-18 b",
@@ -787,6 +841,60 @@
       "n": 5
      },
      "mais_preciso": "WASP-18 b",
+     "drop_one": {
+      "WASP-18 b": {
+       "media_min": -1.073998682076397,
+       "sigma_min": 0.9646090886654142,
+       "chi2": 1.6930766158207768,
+       "dof": 4,
+       "chi2_dof": 0.4232691539551942,
+       "n": 5
+      },
+      "WASP-4 b": {
+       "media_min": -1.7596099159108387,
+       "sigma_min": 0.815469918173988,
+       "chi2": 2.5304282957035413,
+       "dof": 4,
+       "chi2_dof": 0.6326070739258853,
+       "n": 5
+      },
+      "WASP-19 b": {
+       "media_min": -1.83723162425113,
+       "sigma_min": 0.7387360083430575,
+       "chi2": 1.9938397331584299,
+       "dof": 4,
+       "chi2_dof": 0.49845993328960747,
+       "n": 5
+      },
+      "WASP-6 b": {
+       "media_min": -1.9744784444438543,
+       "sigma_min": 0.7692311335030007,
+       "chi2": 1.5963087663468334,
+       "dof": 4,
+       "chi2_dof": 0.39907719158670835,
+       "n": 5
+      },
+      "WASP-17 b": {
+       "media_min": -1.571888877472507,
+       "sigma_min": 0.7223298406305325,
+       "chi2": 1.836187315176501,
+       "dof": 4,
+       "chi2_dof": 0.45904682879412523,
+       "n": 5
+      },
+      "WASP-98 b": {
+       "media_min": -1.675058767454301,
+       "sigma_min": 0.7271557540606924,
+       "chi2": 2.5630962081582536,
+       "dof": 4,
+       "chi2_dof": 0.6407740520395634,
+       "n": 5
+      }
+     },
+     "drop_one_min": -1.9744784444438543,
+     "drop_one_max": -1.073998682076397,
+     "drop_one_mesmo_sinal": true,
+     "drop_one_pior": "WASP-18 b",
      "alvos": [
       "WASP-17 b",
       "WASP-18 b",
@@ -798,6 +906,41 @@
     }
    },
    "fonte": "calibradores_expandido.json (35 candidatos com fonte SuperWASP; IW22 J/ApJS/259/62 e ExoClock III J/ApJS/265/4)"
+  },
+  "hj_wasp4": {
+   "valor": {
+    "IW22": -1.2804148346185684,
+    "ExoClock3": -1.4452902227640152,
+    "Bouma2020_quad": -0.8137399703264236
+   },
+   "fonte": "vies_hj_indep.parquet: O-C de WASP-4 b por efemeride"
+  },
+  "alavanca_wasp17": {
+   "valor": {
+    "peso_pct": 2.6569153262979044,
+    "chi2_pct": 56.86115779430015,
+    "sigma_da_media": 1.8094640039293628,
+    "barra_min": 4.437325123779358,
+    "chi2_outros_cinco": 2.394640202099945,
+    "media_quatro": -1.3857847244598533,
+    "media_com_98": -1.4411032060537354,
+    "media_seis": -1.6602543835360326,
+    "rejeitados_pelo_cap": 9
+   },
+   "fonte": "calibradores_expandido.parquet: pesos e contribuicoes ao chi2 sob IW22"
+  },
+  "alavanca_wasp17_ek": {
+   "valor": {
+    "chi2_pct": 27.51355417040685,
+    "sigma_da_media": 0.8402794464322884,
+    "chi2": 2.5662607735935126,
+    "discordancia_min": 4.713768437504768,
+    "concordancia_min": 0.029808729887008667,
+    "concordancia_max": 0.6828910857439041,
+    "sig_pred_iw": 2.1168489790251925,
+    "sig_pred_iw_outros_max": 0.6103009693737672
+   },
+   "fonte": "calibradores_expandido.parquet: a mesma alavanca sob ExoClock III, e a diferenca entre os dois catalogos"
   }
  },
  "5.2.5": {
@@ -1888,6 +2031,15 @@
     "sobrevivem_adversarial": 23
    },
    "fonte": "oc_lote_barras_formais/resumo_oc_lote.parquet: todos os que chegam a um ajuste"
+  }
+ },
+ "ApC": {
+  "itens_do_registro": {
+   "valor": {
+    "retiradas": 18,
+    "defeitos": 13
+   },
+   "fonte": "reports/apendice_d_retiradas.md e apendice_d_defeitos_publicacao.md (itens numerados)"
   }
  }
 }

@@ -58,6 +58,67 @@ def apendices_sem_titulo(nota):
     return letras, sorted(set(re.findall(r"Appendix ([A-Z])\b", nota)) - letras)
 
 
+def defeitos_enumerados(nota):
+    """(faltando no corpo, sobrando no corpo) entre as etiquetas do deposito e as que o corpo diz
+    enumerar. Contar virgulas numa frase e fragil; comparar conjuntos de etiquetas nao e."""
+    dep = (config.ROOT / "reports" / "apendice_d_defeitos_publicacao.md").read_text(encoding="utf-8")
+    no_arquivo = set(re.findall(r"<!-- etiqueta: ([a-z0-9-]+) -->", dep))
+    m = re.search(r"<!-- defeitos-enumerados: ([^>]+?) -->", nota)
+    no_corpo = {x.strip() for x in m.group(1).split(",")} if m else set()
+    return sorted(no_arquivo - no_corpo), sorted(no_corpo - no_arquivo)
+
+
+def inventario_de_scripts(nota):
+    """(citados e nao listados, listados e inexistentes) para a lista da Secao 8.
+
+    A Secao 8 se apresenta como um script por medida. Ate a rodada vinte e quatro tres scripts
+    citados no corpo estavam fora dela, dois deles ha versoes - ninguem comparava a lista com o
+    que o texto cita nem com o que existe em src/."""
+    # o inventario comeca na frase que nomeia a cadeia e os geradores, nao na promessa de "um
+    # script por medida": os dez primeiros nomes estao la
+    _i = nota.index("The archive holds, besides the chain itself")
+    _j = nota.index("## Acknowledgements")
+    inv = nota[_i:_j]
+    corpo = nota[:_i] + nota[_j:]        # os apendices vem DEPOIS do inventario e tambem citam scripts
+    src = config.ROOT / "src"
+    citados = {m for m in re.findall(r"`(?:src/)?([a-z0-9_]+)(?:\.py)?`", corpo) if (src / f"{m}.py").exists()}
+    listados = {m for m in re.findall(r"`([a-z0-9_]+)`", inv)}
+    faltam = sorted(citados - listados)
+    fantasmas = sorted(m for m in listados if not (src / f"{m}.py").exists() and not (src / m).exists()
+                       and not list((config.DATA / "orquestra" / "oc_lote").glob(f"{m}.*"))
+                       and not list((config.DATA / "orquestra").glob(f"{m}.*"))
+                       and not list((config.DATA / "results").glob(f"{m}.*")))
+    return faltam, fantasmas
+
+
+# abreviacoes que terminam em ponto e seguem com minuscula, e as aberturas de frase em minuscula
+# que o assunto exige (dP/dt e nome de grandeza, nao palavra)
+ABREV_FRASE = r"(?:e\.g|i\.e|cf|vs|al|Fig|Sect|Eq|Ref|approx|resp|no|ca|d\.o)"
+ABRE_MINUSCULA = ("dP/dt",)
+
+
+def frases_quebradas(nota):
+    """Ponto final seguido de minuscula fora de abreviacao: o sintoma de uma insercao que deixou o
+    ponto da frase anterior no lugar (rodada vinte e sete)."""
+    linhas, dentro = [], False
+    for ln in nota.split(chr(10)):
+        if re.match(r"<!-- tabela\d+:inicio", ln):
+            dentro = True
+        linhas.append("" if (dentro or ln.startswith("|") or ln.startswith("<!--")) else ln)
+        if re.match(r"<!-- tabela\d+:fim", ln):
+            dentro = False
+    t = chr(10).join(linhas)
+    fora = []
+    for m in re.finditer(r"\. ([a-z]\w*)", t):
+        antes = t[max(0, m.start() - 24):m.start()]
+        if re.search(ABREV_FRASE + r"$", antes) or re.search(r"[a-z]\.[a-z]$", antes):
+            continue
+        if any(t[m.start() + 2:].startswith(x) for x in ABRE_MINUSCULA):
+            continue
+        fora.append(t[max(0, m.start() - 40):m.start() + 40].replace(chr(10), " "))
+    return fora
+
+
 def fonte(d, caminho):
     sec, chave = caminho.split("/")[0], caminho.split("/")[1]
     return d[sec][chave]["fonte"]
@@ -203,6 +264,62 @@ CHECAGENS = [
      "3.4/calibradores_expandido", lambda v: f"{v['ExoClock3']['media_min']:.2f}"),
     ("calibradores: sem o mais preciso", "3.4", r"With six it leaves ([−-]\d\.\d\d) ±", "3.4/calibradores_expandido",
      lambda v: f"{v['IW22']['sem_o_mais_preciso']['media_min']:.2f}"),
+    # rodada vinte e tres: as contagens do registro, escritas por extenso em dois lugares
+    ("retiradas (Apendice C)", "ApC", r"\*\*Readings withdrawn\.\*\* (\w+) readings", "ApC/itens_do_registro",
+     lambda v: {16: "Sixteen", 17: "Seventeen", 18: "Eighteen", 19: "Nineteen"}[v["retiradas"]]),
+    ("retiradas (Secao 8)", "8", r"\(the (\w+) readings withdrawn between versions", "ApC/itens_do_registro",
+     lambda v: {16: "sixteen", 17: "seventeen", 18: "eighteen", 19: "nineteen"}[v["retiradas"]]),
+    ("defeitos (Apendice C)", "ApC", r"\*\*Defects of the publication chain\.\*\* (\w+) further entries", "ApC/itens_do_registro",
+     lambda v: {9: "Nine", 10: "Ten", 11: "Eleven", 12: "Twelve", 13: "Thirteen"}[v["defeitos"]]),
+    ("defeitos (Secao 8)", "8", r"\(the (\w+) defects of the publication chain", "ApC/itens_do_registro",
+     lambda v: {9: "nine", 10: "ten", 11: "eleven", 12: "twelve", 13: "thirteen"}[v["defeitos"]]),
+    # os quatro do conjunto linear, que o paragrafo dos seis usa como comparacao like-for-like
+    ("calibradores: media dos quatro (IW22)", "3.4", r"against (−\d\.\d\d) ± 0\.75 and −\d\.\d\d ± 0\.74 with four",
+     "3.4/hj[IW22 (linear, os 4)]", lambda v: f"{v['media']:.2f}".replace("-", "−")),
+    ("calibradores: media dos quatro (ExoClock)", "3.4", r"against −\d\.\d\d ± 0\.75 and (−\d\.\d\d) ± 0\.74 with four",
+     "3.4/hj[ExoClock3 (linear, os 4)]", lambda v: f"{v['media']:.2f}".replace("-", "−")),
+    ("drop-one adotado (Bouma)", "3.4", r"the drop-one value \((−\d\.\d\d) → −\d\.\d\d\)", "3.4/hj[IW22 + Bouma2020 quad no WASP-4]",
+     lambda v: f"{v['sem_WASP18']:.2f}".replace("-", "−")),
+    ("drop-one linear dos quatro", "3.4", r"the drop-one value \(−\d\.\d\d → (−\d\.\d\d)\)", "3.4/hj[IW22 (linear, os 4)]",
+     lambda v: f"{v['sem_WASP18']:.2f}".replace("-", "−")),
+    ("WASP-4 b linear", "3.4", r"puts WASP-4 b at (−\d\.\d\d) ± 1\.45", "3.4/hj_wasp4",
+     lambda v: f"{v['IW22']:.2f}".replace("-", "−")),
+    ("WASP-4 b com Bouma", "3.4", r"which puts it at (−\d\.\d\d) ± 1\.45", "3.4/hj_wasp4",
+     lambda v: f"{v['Bouma2020_quad']:.2f}".replace("-", "−")),
+    ("drop-one: extremo mais proximo de zero", "3.4", r"moves the mean between ([−-]\d\.\d\d) and [−-]\d\.\d\d min",
+     "3.4/calibradores_expandido", lambda v: f"{v['IW22']['drop_one_max']:.2f}"),
+    ("drop-one: extremo mais longe de zero", "3.4", r"moves the mean between [−-]\d\.\d\d and ([−-]\d\.\d\d) min",
+     "3.4/calibradores_expandido", lambda v: f"{v['IW22']['drop_one_min']:.2f}"),
+    ("drop-one: sigmas do mais fraco", "3.4", r"sits (\d\.\d)σ from zero against 0\.4σ", "3.4/calibradores_expandido",
+     lambda v: f"{abs(v['IW22']['drop_one'][v['IW22']['drop_one_pior']]['media_min']) / v['IW22']['drop_one'][v['IW22']['drop_one_pior']]['sigma_min']:.1f}"),
+    # rodada vinte e seis: a alavanca de WASP-17 b
+    ("WASP-17 b: peso", "3.4", r"carries (\d\.\d)% of the weight", "3.4/alavanca_wasp17",
+     lambda v: f"{v['peso_pct']:.1f}"),
+    ("WASP-17 b: fracao do chi2", "3.4", r"of the weight and (\d+)% of the χ²", "3.4/alavanca_wasp17",
+     lambda v: f"{v['chi2_pct']:.0f}"),
+    ("WASP-17 b: distancia da media", "3.4", r"sitting (\d\.\d)σ from their mean", "3.4/alavanca_wasp17",
+     lambda v: f"{v['sigma_da_media']:.1f}"),
+    ("media com WASP-98 b", "3.4", r"with four to ([−-]\d\.\d\d) when WASP-98 b joins", "3.4/alavanca_wasp17",
+     lambda v: f"{v['media_com_98']:.2f}"),
+    ("deslocamento de WASP-17 b", "3.4", r"between four and six, (\d\.\d\d) is that one object", "3.4/alavanca_wasp17",
+     lambda v: f"{abs(v['media_seis'] - v['media_com_98']):.2f}"),
+    ("calibradores rejeitados pelo cap", "3.4", r"the cap rejects — (\d+) of the \d+ that yield an epoch",
+     "3.4/alavanca_wasp17", lambda v: str(v["rejeitados_pelo_cap"])),
+    # rodada vinte e sete: a alavanca vista pelos DOIS catalogos, que e o conteudo novo
+    ("WASP-17 b sob ExoClock: fracao do chi2", "3.4", r"Under ExoClock III it carries (\d+)% and sits", "3.4/alavanca_wasp17_ek",
+     lambda v: f"{v['chi2_pct']:.0f}"),
+    ("WASP-17 b sob ExoClock: sigmas", "3.4", r"it carries \d+% and sits (\d\.\d)σ out", "3.4/alavanca_wasp17_ek",
+     lambda v: f"{v['sigma_da_media']:.1f}"),
+    ("chi2/nu dos seis sob ExoClock", "3.4", r"the six have χ²/ν = (\d\.\d) with no outlier", "3.4/alavanca_wasp17_ek",
+     lambda v: f"{v['chi2'] / 5:.1f}"),
+    ("discordancia entre efemerides em WASP-17 b", "3.4", r"they disagree by (\d\.\d\d) min", "3.4/alavanca_wasp17_ek",
+     lambda v: f"{v['discordancia_min']:.2f}"),
+    ("concordancia nos outros cinco (min)", "3.4", r"they agree to (\d\.\d\d)–\d\.\d\d min", "3.4/alavanca_wasp17_ek",
+     lambda v: f"{v['concordancia_min']:.2f}"),
+    ("concordancia nos outros cinco (max)", "3.4", r"they agree to \d\.\d\d–(\d\.\d\d) min", "3.4/alavanca_wasp17_ek",
+     lambda v: f"{v['concordancia_max']:.2f}"),
+    ("incerteza propagada IW22 em WASP-17 b", "3.4", r"carries (\d\.\d) min of propagated uncertainty", "3.4/alavanca_wasp17_ek",
+     lambda v: f"{v['sig_pred_iw']:.1f}"),
     ("barras formais, significativos", "5.1", r"returned (\d+) of \d+ targets with \|dP/dt\|/σ > 3", "5.1/barras_formais_todos",
      lambda v: str(v["significativos"])),
     ("barras formais, quantos ajustam", "5.1", r"returned \d+ of (\d+) targets with \|dP/dt\|/σ > 3", "5.1/barras_formais_todos",
@@ -273,7 +390,7 @@ LISTA_NEGRA = [
     # rodada doze: hash de commit no texto. O hash citado na 5.5 so existia no repositorio
     # privado - ninguem de fora podia resolve-lo - e a citacao passou a ser o nome do script
     ("hash de commit no texto", r"commit [0-9a-f]{7,40}\b", None),
-    ("'all ten' / 'the ten'", r"\ball ten\b|\bthe ten\b", None),
+    ("contagem de dez deteccoes (hoje onze)", r"\b(all|the) ten (detections|targets|members|of them)\b", None),
 ]
 
 
@@ -360,6 +477,21 @@ def main():
     # Rodada dezessete: BLOCO GERADO EDITADO NO PRODUTO. A poda trocou uma referencia de apendice
     # dentro da Tabela 2 (gerada); a regeneracao seguinte a restaurou, e apontava para o apendice
     # errado depois da renumeracao. Editar o produto em vez da fonte tem de ficar visivel.
+    _falt, _sobra = defeitos_enumerados(nota)
+    print(f"== DEFEITOS ENUMERADOS (corpo x deposito): "
+          f"{'conferem' if not _falt and not _sobra else 'DIVERGEM'}"
+          + (f" | no deposito e nao no corpo: {_falt}" if _falt else "")
+          + (f" | no corpo e nao no deposito: {_sobra}" if _sobra else ""))
+    _fal, _fan = inventario_de_scripts(nota)
+    print(f"== INVENTARIO DE SCRIPTS (Secao 8): {'completo' if not _fal and not _fan else 'INCOMPLETO'}"
+          + (f" | citados e nao listados: {_fal}" if _fal else "")
+          + (f" | listados e inexistentes: {_fan}" if _fan else ""))
+
+    _quebradas = frases_quebradas(nota)
+    print(f"== FRASES QUEBRADAS (ponto seguido de minuscula): {len(_quebradas)}")
+    for _q in _quebradas:
+        print(f"   ...{_q}")
+
     _desatual = blocos_gerados_divergentes(nota)
     print(f"== BLOCOS GERADOS (nota x tabelas_nota.md): "
           f"{'iguais' if not _desatual else 'DIVERGEM em ' + ', '.join(_desatual)}")

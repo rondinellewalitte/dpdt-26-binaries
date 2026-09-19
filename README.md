@@ -93,10 +93,10 @@ summation.
 Two scripts close the loop between the records and the manuscript. `numeros_da_nota.py` writes
 `reports/numeros_da_nota.json`: every quantity quoted in the paper, with the file it was read from.
 `confere_nota.py` reads the manuscript, extracts each of those quantities from the text and compares it with the
-registry (107 checks, every occurrence of each), and sweeps both the manuscript and the text drawn inside the
+registry (133 checks, every occurrence of each), and sweeps both the manuscript and the text drawn inside the
 figures for values of superseded states of the chain, which are allowed only in Appendices C and D. A third guard,
 `citacoes_tabelas.py`, reads every numeral of the body that cites an entry of Tables 3 or 4 from the parquet
-rather than from the text; `md_para_tex.py` refuses to write any TeX while any of the three disagrees.
+rather than from the text; `md_para_tex.py` refuses to write any TeX while any of the three disagrees. Four further guards check the structure around the numbers rather than the numbers: every entry of the deposited record of defects carries a tag and the manuscript declares which it enumerates; every `src` module the text cites must appear in the inventory of the Data availability section, and every module that inventory names must exist; a full stop followed by a lower-case word is reported as a sentence an insertion may have broken; and no `ef` of the generated TeX may resolve to the sectioning label that contains it (captions of floats excepted, by declaration).
 
 ## The timing chain
 

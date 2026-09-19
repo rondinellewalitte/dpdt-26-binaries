@@ -184,10 +184,17 @@ def main():
         if len(d) < 2:
             continue
         m = media_ponderada(d)
-        # sensibilidade: tirar o calibrador de menor barra total
+        # sensibilidade: tirar CADA UM, nao so o mais preciso. A afirmacao e sobre nao depender de
+        # nenhum calibrador isolado, e quem a sustenta e a estabilidade de sinal sobre as omissoes
         i = d.sig_total_min.idxmin()
         m["sem_o_mais_preciso"] = media_ponderada(d.drop(index=i))
         m["mais_preciso"] = str(d.loc[i, "pl_name"])
+        m["drop_one"] = {str(r.pl_name): media_ponderada(d.drop(index=k)) for k, r in d.iterrows()}
+        _v = [x["media_min"] for x in m["drop_one"].values()]
+        m["drop_one_min"] = min(_v)
+        m["drop_one_max"] = max(_v)
+        m["drop_one_mesmo_sinal"] = bool(all(x < 0 for x in _v) or all(x > 0 for x in _v))
+        m["drop_one_pior"] = str(min(m["drop_one"], key=lambda n: abs(m["drop_one"][n]["media_min"])))
         m["alvos"] = sorted(d.pl_name)
         res["conjuntos"][rot] = m
         print(f"\n== {rot}: media ponderada {m['media_min']:+.2f} ± {m['sigma_min']:.2f} min "

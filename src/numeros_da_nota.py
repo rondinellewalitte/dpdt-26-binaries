@@ -377,6 +377,68 @@ def numeros():
          "IW22": _cx["conjuntos"]["IW22"], "ExoClock3": _cx["conjuntos"]["ExoClock3"]},
         "calibradores_expandido.json (35 candidatos com fonte SuperWASP; IW22 J/ApJS/259/62 e ExoClock III J/ApJS/265/4)")
 
+    # rodada vinte e tres: as contagens do PROPRIO registro, que o texto cita em dois lugares e que
+    # ninguem conferia - a Secao 8 ficou com "sixteen" e "five" enquanto os arquivos tinham 18 e 10
+    import re as _re
+    _reg_n = {}
+    for _k, _f in (("retiradas", "apendice_d_retiradas.md"), ("defeitos", "apendice_d_defeitos_publicacao.md")):
+        _t = (config.ROOT / "reports" / _f).read_text(encoding="utf-8")
+        _reg_n[_k] = len(_re.findall(r"^\d+\. \*", _t, _re.M))
+    put("ApC", "itens_do_registro", _reg_n, "reports/apendice_d_retiradas.md e apendice_d_defeitos_publicacao.md (itens numerados)")
+
+    # rodada vinte e tres: WASP-4 b nas duas efemerides, que e a diferenca entre as duas medias
+    _vh = pq("vies_hj_indep.parquet")
+    _w4 = _vh[_vh.hj == "WASP-4 b"].set_index("efemeride")
+    put("3.4", "hj_wasp4", {k: float(_w4.loc[k, "oc_min"]) for k in ("IW22", "ExoClock3", "Bouma2020_quad") if k in _w4.index},
+        "vies_hj_indep.parquet: O-C de WASP-4 b por efemeride")
+
+    # rodada vinte e seis: a alavanca de WASP-17 b dentro dos seis calibradores
+    _cc = pq("calibradores_expandido.parquet")
+    _cc = _cc[(_cc.status == "medido") & (_cc.efemeride == "IW22")].set_index("pl_name")
+    _o, _s = _cc.oc_min.values, _cc.sig_total_min.values
+    _w = 1.0 / _s ** 2
+    _m = float((_w * _o).sum() / _w.sum())
+    _chi2 = float((_w * (_o - _m) ** 2).sum())
+    _i = list(_cc.index).index("WASP-17 b")
+    _sel = [k for k in range(len(_o)) if k != _i]
+    _w5 = 1.0 / _s[_sel] ** 2
+    _m5 = float((_w5 * _o[_sel]).sum() / _w5.sum())
+
+    def _med(nomes):
+        _x = _cc.loc[nomes]
+        _ww = 1.0 / _x.sig_total_min.values ** 2
+        return float((_ww * _x.oc_min.values).sum() / _ww.sum())
+
+    _q = ["WASP-18 b", "WASP-4 b", "WASP-19 b", "WASP-6 b"]
+    put("3.4", "alavanca_wasp17",
+        {"peso_pct": 100 * float(_w[_i]) / float(_w.sum()), "chi2_pct": 100 * float(_w[_i] * (_o[_i] - _m) ** 2) / _chi2,
+         "sigma_da_media": abs(float((_o[_i] - _m) / _s[_i])), "barra_min": float(_s[_i]),
+         "chi2_outros_cinco": float((_w5 * (_o[_sel] - _m5) ** 2).sum()),
+         "media_quatro": _med(_q), "media_com_98": _med(_q + ["WASP-98 b"]), "media_seis": _med(list(_cc.index)),
+         "rejeitados_pelo_cap": int(_cx["n_rendem_epoca"] - _cx["n_passam"])},
+        "calibradores_expandido.parquet: pesos e contribuicoes ao chi2 sob IW22")
+
+    # rodada vinte e sete: a mesma alavanca vista pelo ExoClock, e a discordancia entre catalogos
+    _ce = pq("calibradores_expandido.parquet")
+    _ce = _ce[_ce.status == "medido"]
+    _pv = _ce.pivot_table(index="pl_name", columns="efemeride", values="oc_min")
+    _dif = (_pv.IW22 - _pv.ExoClock3).abs()
+    _ek = _ce[_ce.efemeride == "ExoClock3"].set_index("pl_name")
+    _oe, _se = _ek.oc_min.values, _ek.sig_total_min.values
+    _we = 1.0 / _se ** 2
+    _me = float((_we * _oe).sum() / _we.sum())
+    _c2e = float((_we * (_oe - _me) ** 2).sum())
+    _ie = list(_ek.index).index("WASP-17 b")
+    _iw2 = _ce[_ce.efemeride == "IW22"].set_index("pl_name")
+    put("3.4", "alavanca_wasp17_ek",
+        {"chi2_pct": 100 * float(_we[_ie] * (_oe[_ie] - _me) ** 2) / _c2e,
+         "sigma_da_media": abs(float((_oe[_ie] - _me) / _se[_ie])), "chi2": _c2e,
+         "discordancia_min": float(_dif["WASP-17 b"]),
+         "concordancia_min": float(_dif.drop("WASP-17 b").min()), "concordancia_max": float(_dif.drop("WASP-17 b").max()),
+         "sig_pred_iw": float(_iw2.loc["WASP-17 b", "sig_pred_min"]),
+         "sig_pred_iw_outros_max": float(_iw2.drop("WASP-17 b").sig_pred_min.max())},
+        "calibradores_expandido.parquet: a mesma alavanca sob ExoClock III, e a diferenca entre os dois catalogos")
+
     put("5.5", "J_previsao_script", "ffi_fora_amostra_d9", "src/ffi_fora_amostra_d9.py: docstring com PREVISAO POR CLASSE")
     return F
 

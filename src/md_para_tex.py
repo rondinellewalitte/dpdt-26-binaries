@@ -307,6 +307,35 @@ def conferir_figuras():
     print(f"figuras conferidas: {len(list(orig.glob('*.png')))} identicas em reports/ e paper/")
 
 
+NIVEL_SEC = {"section": 1, "subsection": 2, "subsubsection": 3}
+
+
+def referencias_ao_proprio_container(doc):
+    """Cada \\ref cujo alvo e o rotulo da secao que o contem (rodada vinte e oito).
+
+    Legenda de float nao conta: um figure/table pode sair paginas longe da sua secao, e nomea-la
+    na legenda e informacao. O resto e erro - o leitor e mandado para onde ja esta."""
+    flut = [(m.start(), m.end()) for m in
+            re.finditer(r"\\begin\{(figure|table|sidewaystable)\*?\}.*?\\end\{\1\*?\}", doc, re.S)]
+    eventos = []
+    for m in re.finditer(r"\\(section|subsection|subsubsection)\*?\{[^{}]*\}\s*\\label\{([^{}]+)\}", doc):
+        eventos.append((m.start(), 0, NIVEL_SEC[m.group(1)], m.group(2)))
+    for m in re.finditer(r"\\ref\{([^{}]+)\}", doc):
+        if any(a <= m.start() < b for a, b in flut):
+            continue
+        eventos.append((m.start(), 1, 99, m.group(1)))
+    eventos.sort(key=lambda x: (x[0], x[1]))
+    pilha, ruins = [], []
+    for p, tipo, niv, rot in eventos:
+        if tipo == 0:
+            while pilha and pilha[-1][0] >= niv:
+                pilha.pop()
+            pilha.append((niv, rot))
+        elif pilha and pilha[-1][1] == rot:
+            ruins.append((rot, doc[max(0, p - 60):p + 20].replace(chr(10), " ")))
+    return ruins
+
+
 def main():
     # rodada catorze: nenhum TeX sai enquanto o corpo citar uma entrada das Tabelas 3 ou 4 numa
     # versao anterior da cadeia (Apendice D, item 20)
@@ -321,6 +350,13 @@ def main():
     assert not fora, f"blocos gerados editados na nota: {fora} - corrija em src/tabela_nota.py e rode com --inserir"
     _letras, mortas = CN.apendices_sem_titulo(MD.read_text(encoding="utf-8"))
     assert not mortas, f"o texto cita apendices que nao existem: {mortas}"
+    # rodada vinte e quatro: nem TeX com a enumeracao dos defeitos fora do registro, nem com um
+    # script citado no corpo e ausente do inventario da Secao 8 (ou listado e inexistente)
+    _md = MD.read_text(encoding="utf-8")
+    _f, _s = CN.defeitos_enumerados(_md)
+    assert not _f and not _s, f"enumeracao dos defeitos x deposito: faltam {_f}, sobram {_s}"
+    _fa, _fan = CN.inventario_de_scripts(_md)
+    assert not _fa and not _fan, f"inventario da Secao 8: citados e nao listados {_fa}, listados e inexistentes {_fan}"
     conferir_figuras()
     md = MD.read_text(encoding="utf-8")
     v1 = TEX_V1.read_text(encoding="utf-8")
@@ -586,6 +622,11 @@ def main():
     n_par_tex = sum(1 for l in linhas_tex if e_texto(l))
     assert n_par_md == n_par_tex, f"{n_par_md} paragrafos no markdown, {n_par_tex} blocos de texto no TeX"
     resumo.append(f"paragrafos: {n_par_tex} blocos de texto no TeX = {n_par_md} paragrafos no markdown; 0 pares emendados")
+
+    _circ = referencias_ao_proprio_container(doc)
+    assert not _circ, ("referencia ao proprio container: "
+                       + "; ".join(f"{r} em ...{c}" for r, c in _circ))
+    resumo.append(f"referencias cruzadas: {doc.count(chr(92) + 'ref{')} \\ref, nenhuma para a secao que a contem")
 
     # ---- escrita: so agora, com todas as guardas passadas
     TEX.write_text(doc, encoding="utf-8")
